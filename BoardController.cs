@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+[ExecuteInEditMode]
 public class BoardController : MonoBehaviour
 {
     public void Update()
@@ -9,10 +10,9 @@ public class BoardController : MonoBehaviour
         GenerateLogicalGrid();
     }
 
-
     private const int Board_Size = 8;
     public GameObject visualBoardPlane;
-    private Vector3[,] gridPositions = new Vector3[Board_Size, Board_Size];
+    public Vector3[,] gridPositions = new Vector3[Board_Size, Board_Size];
     void GenerateLogicalGrid()
     {       
         Bounds bounds = visualBoardPlane.GetComponent<Renderer>().bounds;
