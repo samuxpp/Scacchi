@@ -5,28 +5,37 @@ using System.Collections.Generic;
 [ExecuteInEditMode]
 public class BoardController : MonoBehaviour
 {
-    public void Update()
+	public StartingPositions StartingPositions;
+	public PieceState[,] ChessBoardState = new PieceState[8, 8];
+
+	private void Awake()
+    {
+		StartingPositions = GetComponent<StartingPositions>();
+	}
+
+    public void Start()
     {
         GenerateLogicalGrid();
+        StartingPositions.SetPositions();
     }
 
-    private const int Board_Size = 8;
+    private const int board_Size = 8;
     public GameObject visualBoardPlane;
-    public Vector3[,] gridPositions = new Vector3[Board_Size, Board_Size];
+    public Vector3[,] gridPositions = new Vector3[board_Size, board_Size];
     void GenerateLogicalGrid()
     {       
         Bounds bounds = visualBoardPlane.GetComponent<Renderer>().bounds;
         float boardWidth = bounds.size.x;
         float boardDepth = bounds.size.z;
 
-        float squareSizeX = boardWidth / Board_Size;
-        float squareSizeZ = boardDepth / Board_Size;
+        float squareSizeX = boardWidth / board_Size;
+        float squareSizeZ = boardDepth / board_Size;
 
         Vector3 origin = bounds.min;
 
-        for (int r = 0; r < Board_Size; r++)
+        for (int r = 0; r < board_Size; r++)
         {
-            for (int c = 0; c < Board_Size; c++)
+            for (int c = 0; c < board_Size; c++)
             {
                 float xPos = origin.x + (c * squareSizeX) + (squareSizeX / 2f);
                 float yPos = bounds.max.y + 0.05f;
@@ -36,8 +45,7 @@ public class BoardController : MonoBehaviour
         }
     }
 
-
-    private void OnDrawGizmos()
+	private void OnDrawGizmos()
     {
         if (gridPositions == null || gridPositions[0, 0] == Vector3.zero)
         {
