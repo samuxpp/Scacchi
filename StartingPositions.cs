@@ -1,5 +1,4 @@
 using UnityEngine;
-
 public class StartingPositions : MonoBehaviour
 {
     public BoardController BoardController;

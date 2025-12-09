@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -7,8 +8,11 @@ public class BoardController : MonoBehaviour
 {
 	public StartingPositions StartingPositions;
 	public PieceState[,] ChessBoardState = new PieceState[8, 8];
+    private const int board_Size = 8;
+    public GameObject visualBoardPlane;
+    public Vector3[,] gridPositions = new Vector3[board_Size, board_Size];
 
-	private void Awake()
+    private void Awake()
     {
 		StartingPositions = GetComponent<StartingPositions>();
 	}
@@ -19,9 +23,6 @@ public class BoardController : MonoBehaviour
         StartingPositions.SetPositions();
     }
 
-    private const int board_Size = 8;
-    public GameObject visualBoardPlane;
-    public Vector3[,] gridPositions = new Vector3[board_Size, board_Size];
     void GenerateLogicalGrid()
     {       
         Bounds bounds = visualBoardPlane.GetComponent<Renderer>().bounds;
@@ -44,8 +45,28 @@ public class BoardController : MonoBehaviour
             }
         }
     }
+    public void OnSelect(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            HandleMouseClick();
+        }
+    }
+    private void HandleMouseClick()
+    {
+        if (Mouse.current == null) return;
+        Vector2 mousePosition = Mouse.current.position.ReadValue();
+        Ray ray = Camera.main.ScreenPointToRay(mousePosition);
+        RaycastHit hit;
 
-	private void OnDrawGizmos()
+        if (Physics.Raycast(ray, out hit, 100f))
+        {
+            GameObject clickedObject = hit.collider.gameObject;
+            Debug.Log("Oggetto selezionato dal nuovo Input System: " + clickedObject.name);
+        }
+    }
+
+    private void OnDrawGizmos()
     {
         if (gridPositions == null || gridPositions[0, 0] == Vector3.zero)
         {
