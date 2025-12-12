@@ -29,6 +29,7 @@ public class StartingPositions : MonoBehaviour
 			BoardController.ChessBoardState[1, i] = new PieceState
 			{
 				piece = white_ponds[i],
+				pieceType = PieceType.pawn,
 				postion = new Vector2Int(1, i),
 				isWhite = true
 			};
@@ -36,7 +37,8 @@ public class StartingPositions : MonoBehaviour
 			BoardController.ChessBoardState[6, i] = new PieceState
 			{
 				piece = black_ponds[i],
-				postion = new Vector2Int(6, i),
+                pieceType = PieceType.pawn,
+                postion = new Vector2Int(6, i),
 				isWhite = false
 			};
 		}
@@ -45,28 +47,32 @@ public class StartingPositions : MonoBehaviour
 		BoardController.ChessBoardState[0, 0] = new PieceState
 		{
 			piece = white_rooks[0],
-			postion = new Vector2Int(0, 0),
+            pieceType = PieceType.rook,
+            postion = new Vector2Int(0, 0),
 			isWhite = true
 		};
 		white_rooks[1].transform.position = BoardController.gridPositions[0, 7];
 		BoardController.ChessBoardState[0, 7] = new PieceState
 		{
 			piece = white_rooks[1],
-			postion = new Vector2Int(0, 7),
+            pieceType = PieceType.rook,
+            postion = new Vector2Int(0, 7),
 			isWhite = true
 		};
 		black_rooks[0].transform.position = BoardController.gridPositions[7, 0];
 		BoardController.ChessBoardState[7, 0] = new PieceState
 		{
 			piece = black_rooks[0],
-			postion = new Vector2Int(7, 0),
+            pieceType = PieceType.rook,
+            postion = new Vector2Int(7, 0),
 			isWhite = false
 		};
 		black_rooks[1].transform.position = BoardController.gridPositions[7, 7];
 		BoardController.ChessBoardState[7, 7] = new PieceState
 		{
 			piece = black_rooks[1],
-			postion = new Vector2Int(7, 7),
+            pieceType = PieceType.rook,
+            postion = new Vector2Int(7, 7),
 			isWhite = false
 		};
 		//knights
@@ -74,28 +80,32 @@ public class StartingPositions : MonoBehaviour
 		BoardController.ChessBoardState[0, 1] = new PieceState
 		{
 			piece = white_knights[0],
-			postion = new Vector2Int(0, 1),
+            pieceType = PieceType.knight,
+            postion = new Vector2Int(0, 1),
 			isWhite = true
 		};
 		white_knights[1].transform.position = BoardController.gridPositions[0, 6];
 		BoardController.ChessBoardState[0, 6] = new PieceState
 		{
 			piece = white_knights[1],
-			postion = new Vector2Int(0, 6),
+            pieceType = PieceType.knight,
+            postion = new Vector2Int(0, 6),
 			isWhite = true
 		};
 		black_knights[0].transform.position = BoardController.gridPositions[7, 1];
 		BoardController.ChessBoardState[7, 1] = new PieceState
 		{
 			piece = black_knights[0],
-			postion = new Vector2Int(7, 1),
+            pieceType = PieceType.knight,
+            postion = new Vector2Int(7, 1),
 			isWhite = false
 		};
 		black_knights[1].transform.position = BoardController.gridPositions[7, 6];
 		BoardController.ChessBoardState[7, 6] = new PieceState
 		{
 			piece = white_knights[1],
-			postion = new Vector2Int(7, 6),
+            pieceType = PieceType.knight,
+            postion = new Vector2Int(7, 6),
 			isWhite = false
 		};
 		//bishops
@@ -103,28 +113,32 @@ public class StartingPositions : MonoBehaviour
 		BoardController.ChessBoardState[0, 2] = new PieceState
 		{
 			piece = white_bishops[0],
-			postion = new Vector2Int(0, 2),
+            pieceType = PieceType.bishop,
+            postion = new Vector2Int(0, 2),
 			isWhite = true
 		};
 		white_bishops[1].transform.position = BoardController.gridPositions[0, 5];
 		BoardController.ChessBoardState[0, 5] = new PieceState
 		{
 			piece = white_bishops[1],
-			postion = new Vector2Int(0, 5),
+            pieceType = PieceType.bishop,
+            postion = new Vector2Int(0, 5),
 			isWhite = true
 		};
 		black_bishops[0].transform.position = BoardController.gridPositions[7, 2];
 		BoardController.ChessBoardState[7, 2] = new PieceState
 		{
 			piece = black_bishops[0],
-			postion = new Vector2Int(7, 2),
+            pieceType = PieceType.bishop,
+            postion = new Vector2Int(7, 2),
 			isWhite = false
 		};
 		black_bishops[1].transform.position = BoardController.gridPositions[7, 5];
 		BoardController.ChessBoardState[7, 5] = new PieceState
 		{
 			piece = black_bishops[1],
-			postion = new Vector2Int(7, 5),
+            pieceType = PieceType.bishop,
+            postion = new Vector2Int(7, 5),
 			isWhite = false
 		};
 		//queens
@@ -132,14 +146,16 @@ public class StartingPositions : MonoBehaviour
 		BoardController.ChessBoardState[0, 3] = new PieceState
 		{
 			piece = white_queen,
-			postion = new Vector2Int(0, 3),
+            pieceType = PieceType.queen,
+            postion = new Vector2Int(0, 3),
 			isWhite = true
 		};
 		black_queen.transform.position = BoardController.gridPositions[7, 3];
 		BoardController.ChessBoardState[7, 3] = new PieceState
 		{
 			piece = black_queen,
-			postion = new Vector2Int(7, 3),
+            pieceType = PieceType.queen,
+            postion = new Vector2Int(7, 3),
 			isWhite = false
 		};
 		//kings
@@ -147,14 +163,16 @@ public class StartingPositions : MonoBehaviour
 		BoardController.ChessBoardState[0, 4] = new PieceState
 		{
 			piece = white_king,
-			postion = new Vector2Int(0, 4),
+            pieceType = PieceType.king,
+            postion = new Vector2Int(0, 4),
 			isWhite = true
 		};
 		black_king.transform.position = BoardController.gridPositions[7, 4];
 		BoardController.ChessBoardState[7, 4] = new PieceState
 		{
 			piece = black_king,
-			postion = new Vector2Int(7, 4),
+            pieceType = PieceType.king,
+            postion = new Vector2Int(7, 4),
 			isWhite = false
 		};
 	}
