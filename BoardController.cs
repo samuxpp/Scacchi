@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Text;
 
 [ExecuteInEditMode]
 public class BoardController : MonoBehaviour
@@ -101,7 +102,7 @@ public class BoardController : MonoBehaviour
                                 {
                                     legalMoves.Add((i + 2, j));
                                 }
-                                
+
                                 if (j - 1 >= 0)
                                 {
                                     if (ChessBoardState[i + 1, j - 1].piece != null && ChessBoardState[i + 1, j - 1].isWhite == false)
@@ -233,21 +234,112 @@ public class BoardController : MonoBehaviour
                                 break;
                             }
                         }
-                                            
+
+                    }
+                    else if (ChessBoardState[i, j].pieceType == PieceType.bishop)    //bishop
+                    {
+                        for (int k = 0; k < 7; k++)
+                        { 
+                            if (i + k + 1 <= 7 && j + k + 1 <= 7 && ChessBoardState[i + k + 1, j + k + 1].piece == null)
+                            {
+                                legalMoves.Add((i + k + 1, j + k + 1));
+                            }
+                            else if (i + k + 1 <= 7 && j + k + 1 <= 7 && ChessBoardState[i + k + 1, j + k + 1].piece != null && ChessBoardState[i + k + 1, j + k + 1].isWhite == false && ChessBoardState[i, j].isWhite == true)
+                            {
+                                legalCaptures.Add((i + k + 1, j + k + 1));
+                                break;
+                            }
+                            else if (i + k + 1 <= 7 && j + k + 1 <= 7 && ChessBoardState[i + k + 1, j + k + 1].piece != null && ChessBoardState[i + k + 1, j + k + 1].isWhite == true && ChessBoardState[i, j].isWhite == false)
+                            {
+                                legalCaptures.Add((i + k + 1, j + k + 1));
+                                break;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                        for (int k = 0; k < 7; k++)
+                        {
+                            if (i + k + 1 <= 7 && j - k - 1 >= 0 && ChessBoardState[i + k + 1, j - k - 1].piece == null)
+                            {
+                                legalMoves.Add((i + k + 1, j - k - 1));
+                            }
+                            else if (i + k + 1 <= 7 && j - k - 1 >= 0 && ChessBoardState[i + k + 1, j - k - 1].piece != null && ChessBoardState[i + k + 1, j - k - 1].isWhite == false && ChessBoardState[i, j].isWhite == true)
+                            {
+                                legalCaptures.Add((i + k + 1, j - k - 1));
+                                break;
+                            }
+                            else if (i + k + 1 <= 7 && j - k - 1 >= 0 && ChessBoardState[i + k + 1, j - k - 1].piece != null && ChessBoardState[i + k + 1, j - k - 1].isWhite == true && ChessBoardState[i, j].isWhite == false)
+                            {
+                                legalCaptures.Add((i + k + 1, j - k - 1));
+                                break;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                        for (int k = 0; k < 7; k++)
+                        {
+                            if (i - k - 1 >= 0 && j - k - 1 >= 0 && ChessBoardState[i - k - 1, j - k - 1].piece == null)
+                            {
+                                legalMoves.Add((i - k - 1, j - k - 1));
+                            }
+                            else if (i - k - 1 >= 0 && j - k - 1 >= 0 && ChessBoardState[i - k - 1, j - k - 1].piece != null && ChessBoardState[i - k - 1, j - k - 1].isWhite == false && ChessBoardState[i, j].isWhite == true)
+                            {
+                                legalCaptures.Add((i - k - 1, j - k - 1));
+                                break;
+                            }
+                            else if (i - k - 1 >= 0 && j - k - 1 >= 0 && ChessBoardState[i - k - 1, j - k - 1].piece != null && ChessBoardState[i - k - 1, j - k - 1].isWhite == true && ChessBoardState[i, j].isWhite == false)
+                            {
+                                legalCaptures.Add((i - k - 1, j - k - 1));
+                                break;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                        for (int k = 0; k < 7; k++)
+                        {
+                            if (i - k - 1 >= 0 && j + k + 1 <= 7 && ChessBoardState[i - k - 1, j + k + 1].piece == null)
+                            {
+                                legalMoves.Add((i - k - 1, j + k + 1));
+                            }
+                            else if (i - k - 1 >= 0 && j + k + 1 <= 7 &&ChessBoardState[i - k - 1, j + k + 1].piece != null && ChessBoardState[i - k - 1, j + k + 1].isWhite == false && ChessBoardState[i, j].isWhite == true)
+                            {
+                                legalCaptures.Add((i - k - 1, j + k + 1));
+                                break;
+                            }
+                            else if (i - k - 1 >= 0 && j + k + 1 <= 7 &&ChessBoardState[i - k - 1, j + k + 1].piece != null && ChessBoardState[i - k - 1, j + k + 1].isWhite == true && ChessBoardState[i, j].isWhite == false)
+                            {
+                                legalCaptures.Add((i - k - 1, j + k + 1));
+                                break;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
                     }
                 }
             }
         }
-        Debug.Log("Legal Moves:");
+        StringBuilder legalMovesString = new StringBuilder();
+        StringBuilder legalCapturesString = new StringBuilder();
         foreach (var move in legalMoves)
         {
-            Debug.Log($"Mossa: {ChessNotation(move)}");
+            legalMovesString.Append(ChessNotation(move));
+            legalMovesString.Append(", ");
         }
-        Debug.Log("Legal Captures:");
-        foreach (var move in legalCaptures)
+        foreach (var capture in legalCaptures)
         {
-            Debug.Log($"Mossa: {ChessNotation(move)}");
+            legalCapturesString.Append(ChessNotation(capture));
+            legalCapturesString.Append(", ");
         }
+        Debug.Log($"Legal Moves ({legalMoves.Count}): {legalMovesString.ToString()}");
+        Debug.Log($"Legal Captures ({legalCaptures.Count}): {legalCapturesString.ToString()}");
     }
 
 
