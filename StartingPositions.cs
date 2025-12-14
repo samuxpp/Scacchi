@@ -142,12 +142,12 @@ public class StartingPositions : MonoBehaviour
 			isWhite = false
 		};
 		//queens
-		white_queen.transform.position = BoardController.gridPositions[0, 3];
-		BoardController.ChessBoardState[0, 3] = new PieceState
+		white_queen.transform.position = BoardController.gridPositions[4, 4];
+		BoardController.ChessBoardState[4, 4] = new PieceState
 		{
-			piece = white_queen,
+			piece = white_queen,   //0, 3
             pieceType = PieceType.queen,
-            postion = new Vector2Int(0, 3),
+            postion = new Vector2Int(4, 4),
 			isWhite = true
 		};
 		black_queen.transform.position = BoardController.gridPositions[7, 3];
