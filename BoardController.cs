@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Text;
 
-[ExecuteInEditMode]
 public class BoardController : MonoBehaviour
 {
 	public StartingPositions StartingPositions;
@@ -23,6 +22,7 @@ public class BoardController : MonoBehaviour
     {
         GenerateLogicalGrid();
         StartingPositions.SetPositions();
+        LogBoardState();
     }
 
     void GenerateLogicalGrid()
@@ -54,7 +54,15 @@ public class BoardController : MonoBehaviour
             clickedobject = HandleMouseClick();
             if (clickedobject != null)
             {
+                for (int i = 0; i < StartingPositions.bases.GetLength(0); ++i)
+                {
+                    for (int j = 0; j < StartingPositions.bases.GetLength(1); ++j)
+                    {
+                        StartingPositions.bases[i, j].SetActive(false);
+                    }
+                }          
                 CalculateMoves.Calculate();
+                ShowMoves();
             }
         }
     }
@@ -72,6 +80,21 @@ public class BoardController : MonoBehaviour
             return hit.collider.gameObject;
         }
         return null;
+    }
+
+    public void ShowMoves()
+    {
+        for (int i = 0; i < StartingPositions.bases.GetLength(0); ++i)
+        {
+            for (int j = 0; j < StartingPositions.bases.GetLength(1); ++j)
+            {
+                (int X, int Y) pos = (i, j);
+                if (CalculateMoves.legalMoves.Contains(pos) == true)
+                {
+                    StartingPositions.bases[i, j].SetActive(true);
+                }
+            }
+        }
     }
 
 
@@ -109,4 +132,70 @@ public class BoardController : MonoBehaviour
             Gizmos.DrawLine(startH, endH);
         }
     }
+
+
+    public void LogBoardState()
+    {
+        PieceState[,] board = this.ChessBoardState;
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine("=================================================");
+        sb.AppendLine("       STATO ATTUALE DELLA SCACCHIERA (8x8)      ");
+        sb.AppendLine("=================================================");
+        sb.Append("Rank \\ File | ");
+        for (int j = 0; j < 8; j++)
+        {
+            char file = (char)('a' + j);
+            sb.Append($" {file} |");
+        }
+        sb.AppendLine();
+        sb.AppendLine("-------------------------------------------------");
+
+        for (int i = 7; i >= 0; i--)
+        {
+            int rank = i + 1;
+            sb.Append($"    {rank}     | ");
+
+
+            for (int j = 0; j < 8; j++)
+            {
+                PieceState currentState = board[i, j];
+
+                string cellContent;
+
+                if (currentState.piece == null)
+                {
+                    cellContent = " . ";
+                }
+                else
+                {
+                    char pieceChar = GetPieceChar(currentState.pieceType, currentState.isWhite);
+                    cellContent = $" {pieceChar} ";
+                }
+
+                sb.Append(cellContent + "|");
+            }
+            sb.AppendLine();
+        }
+        sb.AppendLine("=================================================");
+
+        Debug.Log(sb.ToString());
+    }
+    private char GetPieceChar(PieceType type, bool isWhite)
+    {
+        char pieceChar = ' ';
+
+        switch (type)
+        {
+            case PieceType.pawn: pieceChar = isWhite ? 'P' : 'p'; break;
+            case PieceType.knight: pieceChar = isWhite ? 'N' : 'n'; break;
+            case PieceType.bishop: pieceChar = isWhite ? 'B' : 'b'; break;
+            case PieceType.rook: pieceChar = isWhite ? 'R' : 'r'; break;
+            case PieceType.queen: pieceChar = isWhite ? 'Q' : 'q'; break;
+            case PieceType.king: pieceChar = isWhite ? 'K' : 'k'; break;
+            default: break;
+        }
+        return pieceChar;
+    }
+
 }

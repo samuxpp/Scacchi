@@ -5,6 +5,7 @@ using UnityEngine;
 public class CalculateMoves : MonoBehaviour
 {
     public BoardController BoardController;
+    public StartingPositions StartingPositions;
     public List<(int X, int Y)> legalMoves = new();
     public List<(int X, int Y)> legalCaptures = new();
     public void Calculate()
@@ -20,19 +21,28 @@ public class CalculateMoves : MonoBehaviour
                     if (BoardController.ChessBoardState[i, j].pieceType == PieceType.pawn)     //pawn
                     {
                         Pawn(i, j);
+                        break;
                     }
                     else if (BoardController.ChessBoardState[i, j].pieceType == PieceType.rook)    //rook
                     {
                         Rook(i, j);
+                        break;
                     }
                     else if (BoardController.ChessBoardState[i, j].pieceType == PieceType.bishop)    //bishop
                     {
                         Bishop(i, j);
+                        break;
                     }
                     else if (BoardController.ChessBoardState[i, j].pieceType == PieceType.queen)    //queen
                     {
                         Rook(i, j);
                         Bishop(i, j);
+                        break;
+                    }
+                    else if (BoardController.ChessBoardState[i, j].pieceType == PieceType.knight)    //knight
+                    {
+                        Knight(i, j);
+                        break;
                     }
                 }
             }
@@ -284,6 +294,33 @@ public class CalculateMoves : MonoBehaviour
             else
             {
                 break;
+            }
+        }
+    }
+    private void Knight(int i, int j)
+    {
+        int[] dx = { 1, 1, -1, -1, 2, 2, -2, -2};
+        int[] dy = { 2, -2, 2, -2, 1, -1, 1, -1};
+
+        for (int k = 0; k < 8; k++)
+        {
+            int new_i = i + dx[k];
+            int new_j = j + dy[k];
+
+            if (new_i >= 0 && new_i <= 7 && new_j >= 0 && new_j <= 7)
+            {
+                if (BoardController.ChessBoardState[new_i, new_j].piece == null)
+                {
+                    legalMoves.Add((new_i, new_j));
+                }
+                else if (BoardController.ChessBoardState[new_i, new_j].piece != null && BoardController.ChessBoardState[new_i, new_j].isWhite == false && BoardController.ChessBoardState[i, j].isWhite == true)
+                {
+                    legalCaptures.Add((new_i, new_j));
+                }
+                else if (BoardController.ChessBoardState[new_i, new_j].piece != null && BoardController.ChessBoardState[new_i, new_j].isWhite == true && BoardController.ChessBoardState[i, j].isWhite == false)
+                {
+                    legalCaptures.Add((new_i, new_j));
+                }
             }
         }
     }

@@ -15,11 +15,9 @@ public class StartingPositions : MonoBehaviour
 	public GameObject black_queen;
 	public GameObject white_king;
 	public GameObject black_king;
+    public GameObject squarePrefab;
+    public GameObject[,] bases = new GameObject[8, 8];
 
-	void Update()
-    {
-        
-    }
 
     public void SetPositions()
     {
@@ -76,12 +74,12 @@ public class StartingPositions : MonoBehaviour
 			isWhite = false
 		};
 		//knights
-		white_knights[0].transform.position = BoardController.gridPositions[0, 1];
-		BoardController.ChessBoardState[0, 1] = new PieceState
+		white_knights[0].transform.position = BoardController.gridPositions[3, 5];
+		BoardController.ChessBoardState[3, 5] = new PieceState
 		{
 			piece = white_knights[0],
             pieceType = PieceType.knight,
-            postion = new Vector2Int(0, 1),
+            postion = new Vector2Int(3, 5),
 			isWhite = true
 		};
 		white_knights[1].transform.position = BoardController.gridPositions[0, 6];
@@ -103,7 +101,7 @@ public class StartingPositions : MonoBehaviour
 		black_knights[1].transform.position = BoardController.gridPositions[7, 6];
 		BoardController.ChessBoardState[7, 6] = new PieceState
 		{
-			piece = white_knights[1],
+			piece = black_knights[1],
             pieceType = PieceType.knight,
             postion = new Vector2Int(7, 6),
 			isWhite = false
@@ -142,12 +140,12 @@ public class StartingPositions : MonoBehaviour
 			isWhite = false
 		};
 		//queens
-		white_queen.transform.position = BoardController.gridPositions[4, 4];
-		BoardController.ChessBoardState[4, 4] = new PieceState
+		white_queen.transform.position = BoardController.gridPositions[0, 3];
+		BoardController.ChessBoardState[0, 3] = new PieceState
 		{
-			piece = white_queen,   //0, 3
+			piece = white_queen,
             pieceType = PieceType.queen,
-            postion = new Vector2Int(4, 4),
+            postion = new Vector2Int(0, 3),
 			isWhite = true
 		};
 		black_queen.transform.position = BoardController.gridPositions[7, 3];
@@ -175,5 +173,17 @@ public class StartingPositions : MonoBehaviour
             postion = new Vector2Int(7, 4),
 			isWhite = false
 		};
-	}
+		//bases
+        for (int i = 0; i < BoardController.gridPositions.GetLength(0); ++i)
+		{
+            for (int j = 0; j < BoardController.gridPositions.GetLength(1); ++j)
+			{
+                Vector3 targetPosition = BoardController.gridPositions[i, j];
+				GameObject newCircle = Instantiate(squarePrefab, targetPosition, Quaternion.Euler(-90f, 0f, 0f));
+                newCircle.transform.SetParent(this.transform);
+                newCircle.name = $"Square_{i}_{j}";
+                bases[i, j] = newCircle;
+            }
+        }
+    }
 }
