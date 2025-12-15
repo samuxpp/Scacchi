@@ -44,6 +44,11 @@ public class CalculateMoves : MonoBehaviour
                         Knight(i, j);
                         break;
                     }
+                    else if (BoardController.ChessBoardState[i, j].pieceType == PieceType.king)    //king
+                    {
+                        King(i, j);
+                        break;
+                    }
                 }
             }
         }
@@ -324,7 +329,31 @@ public class CalculateMoves : MonoBehaviour
             }
         }
     }
-
+    private void King(int i, int j)
+    {
+        int[] dx = { 1, 1, 1, 0, 0, -1, -1, -1 };
+        int[] dy = { 0, 1, -1, -1, 1, 0, 1, -1 };
+        for (int k = 0; k < 8; k++)
+        {
+            int new_i = i + dx[k];
+            int new_j = j + dy[k];
+            if (new_i >= 0 && new_i <= 7 && new_j >= 0 && new_j <= 7)
+            {
+                if (BoardController.ChessBoardState[new_i, new_j].piece == null)
+                {
+                    legalMoves.Add((new_i, new_j));
+                }
+                else if (BoardController.ChessBoardState[new_i, new_j].piece != null && BoardController.ChessBoardState[new_i, new_j].isWhite == false && BoardController.ChessBoardState[i, j].isWhite == true)
+                {
+                    legalCaptures.Add((new_i, new_j));
+                }
+                else if (BoardController.ChessBoardState[new_i, new_j].piece != null && BoardController.ChessBoardState[new_i, new_j].isWhite == true && BoardController.ChessBoardState[i, j].isWhite == false)
+                {
+                    legalCaptures.Add((new_i, new_j));
+                }
+            }
+        }
+    }
 
 
     private string ChessNotation((int X, int Y) coordinate)
