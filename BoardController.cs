@@ -1,12 +1,13 @@
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System.Text;
 
+[ExecuteInEditMode]
 public class BoardController : MonoBehaviour
 {
-	public StartingPositions StartingPositions;
-    public CalculateMoves CalculateMoves;
+	private StartingPositions StartingPositions;
+    private CalculateMoves CalculateMoves;
 	public PieceState[,] ChessBoardState = new PieceState[8, 8];
     private const int board_Size = 8;
     public GameObject visualBoardPlane;
@@ -16,7 +17,8 @@ public class BoardController : MonoBehaviour
     private void Awake()
     {
 		StartingPositions = GetComponent<StartingPositions>();
-	}
+        CalculateMoves = GetComponent<CalculateMoves>();
+    }
 
     public void Start()
     {
@@ -59,6 +61,7 @@ public class BoardController : MonoBehaviour
                     for (int j = 0; j < StartingPositions.bases.GetLength(1); ++j)
                     {
                         StartingPositions.bases[i, j].SetActive(false);
+                        StartingPositions.emptyBases[i, j].SetActive(false);
                     }
                 }          
                 CalculateMoves.Calculate();
@@ -92,6 +95,10 @@ public class BoardController : MonoBehaviour
                 if (CalculateMoves.legalMoves.Contains(pos) == true)
                 {
                     StartingPositions.bases[i, j].SetActive(true);
+                }
+                if (CalculateMoves.legalCaptures.Contains(pos) == true)
+                {
+                    StartingPositions.emptyBases[i, j].SetActive(true);
                 }
             }
         }

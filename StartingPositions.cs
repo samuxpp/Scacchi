@@ -15,9 +15,15 @@ public class StartingPositions : MonoBehaviour
 	public GameObject black_queen;
 	public GameObject white_king;
 	public GameObject black_king;
-    public GameObject squarePrefab;
+    public GameObject circlePrefab;
+    public GameObject emptyCirclePrefab;
     public GameObject[,] bases = new GameObject[8, 8];
+    public GameObject[,] emptyBases = new GameObject[8, 8];
 
+    private void Awake()
+    {
+        BoardController = GetComponent<BoardController>();
+    }
 
     public void SetPositions()
     {
@@ -41,12 +47,12 @@ public class StartingPositions : MonoBehaviour
 			};
 		}
 		//rooks
-		white_rooks[0].transform.position = BoardController.gridPositions[0, 0];
-		BoardController.ChessBoardState[0, 0] = new PieceState
+		white_rooks[0].transform.position = BoardController.gridPositions[3, 3];
+		BoardController.ChessBoardState[3, 3] = new PieceState
 		{
 			piece = white_rooks[0],
             pieceType = PieceType.rook,
-            postion = new Vector2Int(0, 0),
+            postion = new Vector2Int(3, 3),
 			isWhite = true
 		};
 		white_rooks[1].transform.position = BoardController.gridPositions[0, 7];
@@ -179,10 +185,15 @@ public class StartingPositions : MonoBehaviour
             for (int j = 0; j < BoardController.gridPositions.GetLength(1); ++j)
 			{
                 Vector3 targetPosition = BoardController.gridPositions[i, j];
-				GameObject newCircle = Instantiate(squarePrefab, targetPosition, Quaternion.Euler(-90f, 0f, 0f));
+				GameObject newCircle = Instantiate(circlePrefab, targetPosition, Quaternion.Euler(-90f, 0f, 0f));
                 newCircle.transform.SetParent(this.transform);
-                newCircle.name = $"Square_{i}_{j}";
+                newCircle.name = $"Cirlce_{i}_{j}";
                 bases[i, j] = newCircle;
+
+                GameObject newEmptyCircle = Instantiate(emptyCirclePrefab, targetPosition, Quaternion.Euler(-90f, 0f, 0f));
+                newEmptyCircle.transform.SetParent(this.transform);
+                newEmptyCircle.name = $"EmptyCircle_{i}_{j}";
+                emptyBases[i, j] = newEmptyCircle;
             }
         }
     }

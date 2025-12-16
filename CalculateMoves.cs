@@ -1,23 +1,37 @@
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class CalculateMoves : MonoBehaviour
 {
-    public BoardController BoardController;
-    public StartingPositions StartingPositions;
+    private BoardController BoardController;
+    private MovingAnimation MovingAnimation;
+    private StartingPositions StartingPositions;
     public List<(int X, int Y)> legalMoves = new();
     public List<(int X, int Y)> legalCaptures = new();
+    private PieceState clickedPiece = new PieceState();
+    private Vector3 clickedPiecePos = new Vector3(0, 0, 0);
+    private void Awake()
+    {
+        StartingPositions = GetComponent<StartingPositions>();
+        BoardController = GetComponent<BoardController>();
+        MovingAnimation = GetComponent<MovingAnimation>();
+    }
+
     public void Calculate()
     {
         legalMoves.Clear();
         legalCaptures.Clear();
+
         for (int i = 0; i < BoardController.gridPositions.GetLength(0); i++)
         {
             for (int j = 0; j < BoardController.gridPositions.GetLength(1); j++)
             {
                 if (BoardController.ChessBoardState[i, j].piece == BoardController.clickedobject)
                 {
+                    clickedPiece = BoardController.ChessBoardState[i, j];
+                    clickedPiecePos = BoardController.gridPositions[i, j];
                     if (BoardController.ChessBoardState[i, j].pieceType == PieceType.pawn)     //pawn
                     {
                         Pawn(i, j);
@@ -48,8 +62,17 @@ public class CalculateMoves : MonoBehaviour
                     {
                         King(i, j);
                         break;
-                    }
+                    }                 
                 }
+                else if (StartingPositions.bases[i, j] == BoardController.clickedobject)
+                {
+                    MovingAnimation.AnimateAndMovePiece(clickedPiece.piece, clickedPiecePos, BoardController.gridPositions[i, j]);
+                    BoardController.ChessBoardState[clickedPiece.postion[0], clickedPiece.postion[1]].piece = null;
+                    BoardController.ChessBoardState[i, j] = clickedPiece;
+                    BoardController.ChessBoardState[i, j].postion = new Vector2Int(i, j);
+                    break;
+                }
+                
             }
         }
         StringBuilder legalMovesString = new();
@@ -78,7 +101,7 @@ public class CalculateMoves : MonoBehaviour
                 {
                     legalMoves.Add((i + 1, j));
                 }
-                if (BoardController.ChessBoardState[i + 2, j].piece == null && i == 1)
+                if (BoardController.ChessBoardState[i + 1, j].piece == null && BoardController.ChessBoardState[i + 2, j].piece == null && i == 1)
                 {
                     legalMoves.Add((i + 2, j));
                 }
@@ -107,7 +130,7 @@ public class CalculateMoves : MonoBehaviour
                 {
                     legalMoves.Add((i - 1, j));
                 }
-                if (BoardController.ChessBoardState[i - 2, j].piece == null && i == 6)
+                if (BoardController.ChessBoardState[i - 1, j].piece == null && BoardController.ChessBoardState[i - 2, j].piece == null && i == 6)
                 {
                     legalMoves.Add((i - 2, j));
                 }
