@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static UnityEngine.GraphicsBuffer;
 
 public class CalculateMoves : MonoBehaviour
 {
@@ -10,8 +11,14 @@ public class CalculateMoves : MonoBehaviour
     private StartingPositions StartingPositions;
     public List<(int X, int Y)> legalMoves = new();
     public List<(int X, int Y)> legalCaptures = new();
-    private PieceState clickedPiece = new PieceState();
-    private Vector3 clickedPiecePos = new Vector3(0, 0, 0);
+    public List<(int X, int Y)> savedCaptures = new();
+    public List<(int X, int Y)> oldClickedPieceCaptures = new();
+    public GameObject finalpos;
+    public PieceState savedChessBoardState;
+    public Vector3 savedGridPosition;
+    public bool found = false;
+    public PieceState emptyState = new PieceState();
+
     private void Awake()
     {
         StartingPositions = GetComponent<StartingPositions>();
@@ -19,77 +26,6 @@ public class CalculateMoves : MonoBehaviour
         MovingAnimation = GetComponent<MovingAnimation>();
     }
 
-    public void Calculate()
-    {
-        legalMoves.Clear();
-        legalCaptures.Clear();
-
-        for (int i = 0; i < BoardController.gridPositions.GetLength(0); i++)
-        {
-            for (int j = 0; j < BoardController.gridPositions.GetLength(1); j++)
-            {
-                if (BoardController.ChessBoardState[i, j].piece == BoardController.clickedobject)
-                {
-                    clickedPiece = BoardController.ChessBoardState[i, j];
-                    clickedPiecePos = BoardController.gridPositions[i, j];
-                    if (BoardController.ChessBoardState[i, j].pieceType == PieceType.pawn)     //pawn
-                    {
-                        Pawn(i, j);
-                        break;
-                    }
-                    else if (BoardController.ChessBoardState[i, j].pieceType == PieceType.rook)    //rook
-                    {
-                        Rook(i, j);
-                        break;
-                    }
-                    else if (BoardController.ChessBoardState[i, j].pieceType == PieceType.bishop)    //bishop
-                    {
-                        Bishop(i, j);
-                        break;
-                    }
-                    else if (BoardController.ChessBoardState[i, j].pieceType == PieceType.queen)    //queen
-                    {
-                        Rook(i, j);
-                        Bishop(i, j);
-                        break;
-                    }
-                    else if (BoardController.ChessBoardState[i, j].pieceType == PieceType.knight)    //knight
-                    {
-                        Knight(i, j);
-                        break;
-                    }
-                    else if (BoardController.ChessBoardState[i, j].pieceType == PieceType.king)    //king
-                    {
-                        King(i, j);
-                        break;
-                    }                 
-                }
-                else if (StartingPositions.bases[i, j] == BoardController.clickedobject)
-                {
-                    MovingAnimation.AnimateAndMovePiece(clickedPiece.piece, clickedPiecePos, BoardController.gridPositions[i, j]);
-                    BoardController.ChessBoardState[clickedPiece.postion[0], clickedPiece.postion[1]].piece = null;
-                    BoardController.ChessBoardState[i, j] = clickedPiece;
-                    BoardController.ChessBoardState[i, j].postion = new Vector2Int(i, j);
-                    break;
-                }
-                
-            }
-        }
-        StringBuilder legalMovesString = new();
-        StringBuilder legalCapturesString = new();
-        foreach (var move in legalMoves)
-        {
-            legalMovesString.Append(ChessNotation(move));
-            legalMovesString.Append(", ");
-        }
-        foreach (var capture in legalCaptures)
-        {
-            legalCapturesString.Append(ChessNotation(capture));
-            legalCapturesString.Append(", ");
-        }
-        Debug.Log($"Legal Moves {legalMoves.Count}: {legalMovesString}");
-        Debug.Log($"Legal Captures {legalCaptures.Count}: {legalCapturesString}");
-    }
 
     private void Pawn(int i, int j)
     {
@@ -115,7 +51,7 @@ public class CalculateMoves : MonoBehaviour
                 }
                 if (j + 1 <= 7)
                 {
-                    if (BoardController.ChessBoardState[i + 1, j + 1].piece != null && BoardController.ChessBoardState[i + 1, j - 1].isWhite == false)
+                    if (BoardController.ChessBoardState[i + 1, j + 1].piece != null && BoardController.ChessBoardState[i + 1, j + 1].isWhite == false)
                     {
                         legalCaptures.Add((i + 1, j + 1));
                     }
@@ -136,14 +72,14 @@ public class CalculateMoves : MonoBehaviour
                 }
                 if (j - 1 >= 0)
                 {
-                    if (BoardController.ChessBoardState[i - 1, j - 1].piece != null && BoardController.ChessBoardState[i + 1, j - 1].isWhite == true)
+                    if (BoardController.ChessBoardState[i - 1, j - 1].piece != null && BoardController.ChessBoardState[i - 1, j - 1].isWhite == true)
                     {
                         legalCaptures.Add((i - 1, j - 1));
                     }
                 }
                 if (j + 1 <= 7)
                 {
-                    if (BoardController.ChessBoardState[i - 1, j + 1].piece != null && BoardController.ChessBoardState[i + 1, j - 1].isWhite == true)
+                    if (BoardController.ChessBoardState[i - 1, j + 1].piece != null && BoardController.ChessBoardState[i - 1, j + 1].isWhite == true)
                     {
                         legalCaptures.Add((i - 1, j + 1));
                     }
@@ -236,7 +172,7 @@ public class CalculateMoves : MonoBehaviour
             {
                 break;
             }
-        }        
+        }
     }
     private void Bishop(int i, int j)
     {
@@ -327,8 +263,8 @@ public class CalculateMoves : MonoBehaviour
     }
     private void Knight(int i, int j)
     {
-        int[] dx = { 1, 1, -1, -1, 2, 2, -2, -2};
-        int[] dy = { 2, -2, 2, -2, 1, -1, 1, -1};
+        int[] dx = { 1, 1, -1, -1, 2, 2, -2, -2 };
+        int[] dy = { 2, -2, 2, -2, 1, -1, 1, -1 };
 
         for (int k = 0; k < 8; k++)
         {
@@ -384,5 +320,130 @@ public class CalculateMoves : MonoBehaviour
         char file = (char)('a' + coordinate.Y);
         int rank = coordinate.X + 1;
         return $"{file}{rank}";
+    }
+
+
+    public void prova()
+    {
+        legalMoves.Clear();
+        legalCaptures.Clear();
+        found = false;
+        for (int i = 0; i < BoardController.gridPositions.GetLength(0); i++)
+        {
+            for (int j = 0; j < BoardController.gridPositions.GetLength(1); j++)
+            {
+                if (BoardController.ChessBoardState[i, j].piece == BoardController.clickedobject && CheckCaptures(BoardController.clickedobject) == false)  //new
+                {
+                    ResetY();
+                    BoardController.ChessBoardState[i, j].piece.transform.position += new Vector3(0f, 0.7f, 0f);
+                    if (BoardController.ChessBoardState[i, j].pieceType == PieceType.pawn)     //pawn
+                    {
+                        Pawn(i, j);
+                    }
+                    else if (BoardController.ChessBoardState[i, j].pieceType == PieceType.rook)    //rook
+                    {
+                        Rook(i, j);
+                    }
+                    else if (BoardController.ChessBoardState[i, j].pieceType == PieceType.bishop)    //bishop
+                    {
+                        Bishop(i, j);
+                    }
+                    else if (BoardController.ChessBoardState[i, j].pieceType == PieceType.queen)    //queen
+                    {
+                        Rook(i, j);
+                        Bishop(i, j);
+                    }
+                    else if (BoardController.ChessBoardState[i, j].pieceType == PieceType.knight)    //knight
+                    {
+                        Knight(i, j);
+                    }
+                    else if (BoardController.ChessBoardState[i, j].pieceType == PieceType.king)    //king
+                    {
+                        King(i, j);
+                    }
+                    savedCaptures = new List<(int X, int Y)>(legalCaptures);
+                    savedChessBoardState = BoardController.ChessBoardState[i, j];
+                    savedGridPosition = BoardController.gridPositions[i, j];
+                    found = true;
+                }
+                else if (StartingPositions.bases[i, j] == BoardController.clickedobject)  //bases
+                {
+                    MovingAnimation.AnimateAndMovePiece(savedChessBoardState.piece, savedGridPosition + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[i, j]);
+                    BoardController.ChessBoardState[i, j] = savedChessBoardState;
+                    BoardController.ChessBoardState[i, j].postion = new Vector2Int(i, j);
+                    BoardController.ChessBoardState[savedChessBoardState.postion.x, savedChessBoardState.postion.y] = emptyState;
+                    found = true;
+                }
+                else if (CheckCapturesPos(BoardController.clickedobject, i, j))
+                {
+                    MovingAnimation.AnimateAndMovePiece(savedChessBoardState.piece, savedGridPosition + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[i, j]);
+                    MovingAnimation.AnimateAndMovePiece(BoardController.clickedobject, BoardController.gridPositions[i, j], finalpos.transform.position);
+                    BoardController.ChessBoardState[i, j] = savedChessBoardState;
+                    BoardController.ChessBoardState[i, j].postion = new Vector2Int(i, j);
+                    BoardController.ChessBoardState[savedChessBoardState.postion.x, savedChessBoardState.postion.y] = emptyState;
+                    savedCaptures.Clear();
+                    found = true;
+                }
+            }
+        }
+        StringBuilder legalMovesString = new();
+        StringBuilder legalCapturesString = new();
+        foreach (var move in legalMoves)
+        {
+            legalMovesString.Append(ChessNotation(move));
+            legalMovesString.Append(", ");
+        }
+        foreach (var capture in legalCaptures)
+        {
+            legalCapturesString.Append(ChessNotation(capture));
+            legalCapturesString.Append(", ");
+        }
+        //Debug.Log($"Legal Moves {legalMoves.Count}: {legalMovesString}");
+        //Debug.Log($"Legal Captures {legalCaptures.Count}: {legalCapturesString}");
+        if (found == false)
+        {
+            ResetY();
+        }
+    }
+    bool CheckCaptures(GameObject target)
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                if (BoardController.ChessBoardState[i, j].piece == target)
+                {
+                    return savedCaptures.Contains((i, j));
+                }
+            }
+        }
+        return false;
+    }
+    bool CheckCapturesPos(GameObject target, int i, int j)
+    {
+        if (BoardController.ChessBoardState[i, j].piece == null)
+        {
+            return false;
+        }
+        if (BoardController.ChessBoardState[i, j].piece == target)
+        {
+            return savedCaptures.Contains((i, j));
+        }
+
+        return false;
+    }
+    public void ResetY()
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                if (BoardController.ChessBoardState[i, j].piece == null)
+                    continue;
+                Vector3 changedPos = BoardController.ChessBoardState[i, j].piece.transform.position;
+                changedPos.y = 0.29f;
+                BoardController.ChessBoardState[i, j].piece.transform.position = changedPos;
+            }
+        }
     }
 }

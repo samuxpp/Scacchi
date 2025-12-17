@@ -10,6 +10,7 @@ public struct PieceState
 
 public enum PieceType
 {
+    empty,
     pawn,
     knight,
     bishop,

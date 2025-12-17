@@ -29,7 +29,7 @@ public class MovingAnimation : MonoBehaviour
         startPeak.y += heightOffset;
 
         Vector3 endPeak = endPos;
-        endPeak.y += heightOffset;
+        endPeak.y = startPeak.y;
 
         elapsedTime = 0f;
         while (elapsedTime < 1f)

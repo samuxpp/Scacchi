@@ -64,7 +64,7 @@ public class BoardController : MonoBehaviour
                         StartingPositions.emptyBases[i, j].SetActive(false);
                     }
                 }          
-                CalculateMoves.Calculate();
+                CalculateMoves.prova();
                 ShowMoves();
             }
         }
