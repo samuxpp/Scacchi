@@ -35,7 +35,7 @@ public class MovingAnimation : MonoBehaviour
         while (elapsedTime < 1f)
         {
             elapsedTime += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsedTime / 1f);
+            float t = Mathf.Clamp01(elapsedTime / moveDuration * 2);
             float currentY = Mathf.Lerp(startPos.y, startPeak.y, t);
             pieceTransform.position = new Vector3(startPos.x, currentY, startPos.z);
             yield return null;
@@ -56,7 +56,7 @@ public class MovingAnimation : MonoBehaviour
         while (elapsedTime < 1f)
         {
             elapsedTime += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsedTime / 1f);
+            float t = Mathf.Clamp01(elapsedTime / moveDuration * 2);
             float currentY = Mathf.Lerp(endPeak.y, endPos.y, t);
             pieceTransform.position = new Vector3(endPos.x, currentY, endPos.z);
             yield return null;

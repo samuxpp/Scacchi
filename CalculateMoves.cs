@@ -9,6 +9,7 @@ public class CalculateMoves : MonoBehaviour
     private BoardController BoardController;
     private MovingAnimation MovingAnimation;
     private StartingPositions StartingPositions;
+    private Promotion Promotion;
     public List<(int X, int Y)> legalMoves = new();
     public List<(int X, int Y)> legalCaptures = new();
     public List<(int X, int Y)> savedCaptures = new();
@@ -24,6 +25,7 @@ public class CalculateMoves : MonoBehaviour
         StartingPositions = GetComponent<StartingPositions>();
         BoardController = GetComponent<BoardController>();
         MovingAnimation = GetComponent<MovingAnimation>();
+        Promotion = GetComponent<Promotion>();
     }
 
 
@@ -37,7 +39,7 @@ public class CalculateMoves : MonoBehaviour
                 {
                     legalMoves.Add((i + 1, j));
                 }
-                if (BoardController.ChessBoardState[i + 1, j].piece == null && BoardController.ChessBoardState[i + 2, j].piece == null && i == 1)
+                if (BoardController.ChessBoardState[i + 1, j].piece == null && i == 1 && BoardController.ChessBoardState[i + 2, j].piece == null)
                 {
                     legalMoves.Add((i + 2, j));
                 }
@@ -66,7 +68,7 @@ public class CalculateMoves : MonoBehaviour
                 {
                     legalMoves.Add((i - 1, j));
                 }
-                if (BoardController.ChessBoardState[i - 1, j].piece == null && BoardController.ChessBoardState[i - 2, j].piece == null && i == 6)
+                if (BoardController.ChessBoardState[i - 1, j].piece == null && i == 6 && BoardController.ChessBoardState[i - 2, j].piece == null)
                 {
                     legalMoves.Add((i - 2, j));
                 }
@@ -323,14 +325,14 @@ public class CalculateMoves : MonoBehaviour
     }
 
 
-    public void prova()
+    public void Calculate()
     {
         legalMoves.Clear();
         legalCaptures.Clear();
         found = false;
-        for (int i = 0; i < BoardController.gridPositions.GetLength(0); i++)
+        for (int i = 0; i < BoardController.gridPositions.GetLength(0) && found == false; i++)
         {
-            for (int j = 0; j < BoardController.gridPositions.GetLength(1); j++)
+            for (int j = 0; j < BoardController.gridPositions.GetLength(1) && found == false; j++)
             {
                 if (BoardController.ChessBoardState[i, j].piece == BoardController.clickedobject && CheckCaptures(BoardController.clickedobject) == false)  //new
                 {
@@ -372,6 +374,7 @@ public class CalculateMoves : MonoBehaviour
                     BoardController.ChessBoardState[i, j] = savedChessBoardState;
                     BoardController.ChessBoardState[i, j].postion = new Vector2Int(i, j);
                     BoardController.ChessBoardState[savedChessBoardState.postion.x, savedChessBoardState.postion.y] = emptyState;
+                    savedCaptures.Clear();
                     found = true;
                 }
                 else if (CheckCapturesPos(BoardController.clickedobject, i, j))
@@ -384,8 +387,17 @@ public class CalculateMoves : MonoBehaviour
                     savedCaptures.Clear();
                     found = true;
                 }
+                if (BoardController.ChessBoardState[i, j].piece == savedChessBoardState.piece && savedChessBoardState.pieceType == PieceType.pawn && i == 7 && savedChessBoardState.isWhite)
+                {
+                    Promotion.Pause(i, j, true);
+                }
+                else if (BoardController.ChessBoardState[i, j].piece == savedChessBoardState.piece && savedChessBoardState.pieceType == PieceType.pawn && i == 0 && savedChessBoardState.isWhite == false)
+                {
+                    Promotion.Pause(i, j, false);
+                }
             }
         }
+
         StringBuilder legalMovesString = new();
         StringBuilder legalCapturesString = new();
         foreach (var move in legalMoves)
