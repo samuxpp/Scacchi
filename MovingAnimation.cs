@@ -5,7 +5,7 @@ public class MovingAnimation : MonoBehaviour
 {
     private BoardController BoardController;
     public float moveDuration = 0.3f;
-    public float heightOffset = 3.0f;
+    public float heightOffset = 2.0f;
     public GameObject pieceToMove = null;
 
     private void Awake()

@@ -10,6 +10,9 @@ public class CalculateMoves : MonoBehaviour
     private MovingAnimation MovingAnimation;
     private StartingPositions StartingPositions;
     private Promotion Promotion;
+    private bool[] movedRooks = new bool[4]; //false di base
+    private bool[] movedKing = new bool[2];
+    private bool castled = false;
     public List<(int X, int Y)> legalMoves = new();
     public List<(int X, int Y)> legalCaptures = new();
     public List<(int X, int Y)> savedCaptures = new();
@@ -294,6 +297,8 @@ public class CalculateMoves : MonoBehaviour
     {
         int[] dx = { 1, 1, 1, 0, 0, -1, -1, -1 };
         int[] dy = { 0, 1, -1, -1, 1, 0, 1, -1 };
+        int[] dn = { 2, 6 };
+        int[] dl = { 0, 1 };
         for (int k = 0; k < 8; k++)
         {
             int new_i = i + dx[k];
@@ -311,6 +316,17 @@ public class CalculateMoves : MonoBehaviour
                 else if (BoardController.ChessBoardState[new_i, new_j].piece != null && BoardController.ChessBoardState[new_i, new_j].isWhite == true && BoardController.ChessBoardState[i, j].isWhite == false)
                 {
                     legalCaptures.Add((new_i, new_j));
+                }
+            }
+            for (int n = 0; n < 2; n++)
+            {
+                if (BoardController.ChessBoardState[i, j].isWhite && i == 0 && j == 4 && BoardController.ChessBoardState[0, dn[n]].piece == null && movedRooks[dl[n]] == false)
+                {
+                    legalMoves.Add((0, dn[n]));
+                }
+                if (BoardController.ChessBoardState[i, j].isWhite == false && i == 7 && j == 4 && BoardController.ChessBoardState[7, dn[n]].piece == null && movedRooks[dl[n] + 2] == false)
+                {
+                    legalMoves.Add((7, dn[n]));
                 }
             }
         }
@@ -368,19 +384,93 @@ public class CalculateMoves : MonoBehaviour
                     savedGridPosition = BoardController.gridPositions[i, j];
                     found = true;
                 }
-                else if (StartingPositions.bases[i, j] == BoardController.clickedobject)  //bases
+                else if (StartingPositions.bases[i, j] == BoardController.clickedobject)  //////////////bases
                 {
-                    MovingAnimation.AnimateAndMovePiece(savedChessBoardState.piece, savedGridPosition + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[i, j]);
+                    int[] dw = { 2, 6 };
+                    int[] dn = { 0, 7 };
+                    int[] db = { 3, 5 };
+                    castled = false;
+                    for (int n = 0; n < 2; n++)
+                    {
+                        if (i == 0 && j == dw[n] && movedKing[0] == false && movedRooks[n] == false)
+                        {
+                            MovingAnimation.AnimateAndMovePiece(savedChessBoardState.piece, savedGridPosition + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[i, j]);
+                            MovingAnimation.heightOffset = 5f;
+                            MovingAnimation.AnimateAndMovePiece(BoardController.ChessBoardState[0, dn[n]].piece, BoardController.gridPositions[0, dn[n]], BoardController.gridPositions[0, db[n]]);
+                            MovingAnimation.heightOffset = 2f;
+                            BoardController.ChessBoardState[0, db[n]] = BoardController.ChessBoardState[0, dn[n]];
+                            BoardController.ChessBoardState[0, dn[n]] = emptyState;
+                            castled = true;
+                        }
+                        if (i == 7 && j == dw[n] && movedKing[1] == false && movedRooks[n + 2] == false)
+                        {
+                            MovingAnimation.AnimateAndMovePiece(savedChessBoardState.piece, savedGridPosition + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[i, j]);
+                            MovingAnimation.heightOffset = 5f;
+                            MovingAnimation.AnimateAndMovePiece(BoardController.ChessBoardState[7, dn[n]].piece, BoardController.gridPositions[7, dn[n]], BoardController.gridPositions[7, db[n]]);
+                            MovingAnimation.heightOffset = 2f;
+                            BoardController.ChessBoardState[7, db[n]] = BoardController.ChessBoardState[7, dn[n]];
+                            BoardController.ChessBoardState[7, dn[n]] = emptyState;
+                            castled = true;
+                        }
+                    }
+                    if (castled == false)
+                    {
+                        MovingAnimation.AnimateAndMovePiece(savedChessBoardState.piece, savedGridPosition + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[i, j]);
+                    }
+                    for (int k = 0; k < 2; k++)
+                    {
+                        for (int l = 0; l < 2; l++)
+                        {
+                            if (savedChessBoardState.piece == StartingPositions.white_rooks[k] && l == 0)
+                            {
+                                movedRooks[k] = true;
+                            }
+                            else if (savedChessBoardState.piece == StartingPositions.black_rooks[k] && l == 1)
+                            {
+                                movedRooks[k + 2] = true;
+                            }
+                        }
+                    }
+                    if (savedChessBoardState.piece == StartingPositions.white_king)
+                    {
+                        movedKing[0] = true;
+                    }
+                    else if (savedChessBoardState.piece == StartingPositions.black_king)
+                    {
+                        movedKing[1] = true;
+                    }
                     BoardController.ChessBoardState[i, j] = savedChessBoardState;
                     BoardController.ChessBoardState[i, j].postion = new Vector2Int(i, j);
                     BoardController.ChessBoardState[savedChessBoardState.postion.x, savedChessBoardState.postion.y] = emptyState;
                     savedCaptures.Clear();
-                    found = true;
+                    found = true;                 
                 }
-                else if (CheckCapturesPos(BoardController.clickedobject, i, j))
+                else if (CheckCapturesPos(BoardController.clickedobject, i, j))  /////////captures
                 {
                     MovingAnimation.AnimateAndMovePiece(savedChessBoardState.piece, savedGridPosition + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[i, j]);
                     MovingAnimation.AnimateAndMovePiece(BoardController.clickedobject, BoardController.gridPositions[i, j], finalpos.transform.position);
+                    for (int k = 0; k < 2; k++)
+                    {
+                        for (int l = 0; l < 2; l++)
+                        {
+                            if (savedChessBoardState.piece == StartingPositions.white_rooks[k] && l == 0)
+                            {
+                                movedRooks[k] = true;
+                            }
+                            else if (savedChessBoardState.piece == StartingPositions.black_rooks[k] && l == 1)
+                            {
+                                movedRooks[k + 2] = true;
+                            }
+                        }
+                    }
+                    if (savedChessBoardState.piece == StartingPositions.white_king)
+                    {
+                        movedKing[0] = true;
+                    }
+                    else if (savedChessBoardState.piece == StartingPositions.black_king)
+                    {
+                        movedKing[1] = true;
+                    }
                     BoardController.ChessBoardState[i, j] = savedChessBoardState;
                     BoardController.ChessBoardState[i, j].postion = new Vector2Int(i, j);
                     BoardController.ChessBoardState[savedChessBoardState.postion.x, savedChessBoardState.postion.y] = emptyState;
