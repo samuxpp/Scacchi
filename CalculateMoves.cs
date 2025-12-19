@@ -9,6 +9,7 @@ public class CalculateMoves : MonoBehaviour
     private BoardController BoardController;
     private MovingAnimation MovingAnimation;
     private StartingPositions StartingPositions;
+    public SpriteLoader[] SpriteLoader;
     private Promotion Promotion;
     private bool[] movedRooks = new bool[4]; //false di base
     private bool[] movedKing = new bool[2];
@@ -479,10 +480,18 @@ public class CalculateMoves : MonoBehaviour
                 }
                 if (BoardController.ChessBoardState[i, j].piece == savedChessBoardState.piece && savedChessBoardState.pieceType == PieceType.pawn && i == 7 && savedChessBoardState.isWhite)
                 {
+                    for (int v = 0; v < 4; v++)
+                    {
+                        SpriteLoader[v].SetIcon(savedChessBoardState.isWhite);
+                    }        
                     Promotion.Pause(i, j, true);
                 }
                 else if (BoardController.ChessBoardState[i, j].piece == savedChessBoardState.piece && savedChessBoardState.pieceType == PieceType.pawn && i == 0 && savedChessBoardState.isWhite == false)
                 {
+                    for (int v = 0; v < 4; v++)
+                    {
+                        SpriteLoader[v].SetIcon(savedChessBoardState.isWhite);
+                    }       
                     Promotion.Pause(i, j, false);
                 }
             }
