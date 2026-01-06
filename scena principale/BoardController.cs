@@ -13,6 +13,7 @@ public class BoardController : MonoBehaviour
     public GameObject visualBoardPlane;
     public Vector3[,] gridPositions = new Vector3[board_Size, board_Size];
     public GameObject clickedobject;
+    public bool blackTurn = false;
 
     private void Awake()
     {
@@ -63,9 +64,9 @@ public class BoardController : MonoBehaviour
                         StartingPositions.bases[i, j].SetActive(false);
                         StartingPositions.emptyBases[i, j].SetActive(false);
                     }
-                }          
+                }
                 CalculateMoves.Calculate();
-                ShowMoves();
+                ShowMoves();         
             }
         }
     }

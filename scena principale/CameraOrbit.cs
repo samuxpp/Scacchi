@@ -5,7 +5,7 @@ public class CameraOrbit : MonoBehaviour
 {
     private float rotationSpeed = 0.2f;
     private Vector2 lastMousePos;
-    private float zoomSpeed = 5f;
+    private float zoomSpeed = 250f;
     private float smoothness = 5f;
     private float minDistance = 3f;
     private float maxDistance = 25f;

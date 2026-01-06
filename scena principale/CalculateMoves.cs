@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEngine.GraphicsBuffer;
 
 public class CalculateMoves : MonoBehaviour
 {
@@ -22,6 +20,8 @@ public class CalculateMoves : MonoBehaviour
     public PieceState savedChessBoardState;
     public Vector3 savedGridPosition;
     public bool found = false;
+    public bool foundBase = false;
+    public bool foundCapture = false;
     public PieceState emptyState = new PieceState();
 
     private void Awake()
@@ -347,6 +347,8 @@ public class CalculateMoves : MonoBehaviour
         legalMoves.Clear();
         legalCaptures.Clear();
         found = false;
+        foundBase = false;
+        foundCapture = false;
         for (int i = 0; i < BoardController.gridPositions.GetLength(0) && found == false; i++)
         {
             for (int j = 0; j < BoardController.gridPositions.GetLength(1) && found == false; j++)
@@ -444,7 +446,8 @@ public class CalculateMoves : MonoBehaviour
                     BoardController.ChessBoardState[i, j].postion = new Vector2Int(i, j);
                     BoardController.ChessBoardState[savedChessBoardState.postion.x, savedChessBoardState.postion.y] = emptyState;
                     savedCaptures.Clear();
-                    found = true;                 
+                    found = true;
+                    foundBase = true;
                 }
                 else if (CheckCapturesPos(BoardController.clickedobject, i, j))  /////////captures
                 {
@@ -477,6 +480,7 @@ public class CalculateMoves : MonoBehaviour
                     BoardController.ChessBoardState[savedChessBoardState.postion.x, savedChessBoardState.postion.y] = emptyState;
                     savedCaptures.Clear();
                     found = true;
+                    foundCapture = true;
                 }
                 if (BoardController.ChessBoardState[i, j].piece == savedChessBoardState.piece && savedChessBoardState.pieceType == PieceType.pawn && i == 7 && savedChessBoardState.isWhite)
                 {
