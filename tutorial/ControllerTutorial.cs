@@ -1,7 +1,9 @@
 using System.Collections;
+using System.ComponentModel;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem.LowLevel;
+using UnityEngine.UIElements;
 public class ControllerTutorial : MonoBehaviour
 {
     private StartingPositions StartingPositions;
@@ -91,8 +93,7 @@ public class ControllerTutorial : MonoBehaviour
         frontText.SetActive(false);
         continua.SetActive(false);
         newState = BoardController.ChessBoardState[0, 2];
-        CleanBoard();    
-
+        CleanBoard();
         StartingPositions.white_bishops[0].SetActive(true);
         BoardController.ChessBoardState[0, 2] = newState;
         for (int i = 0; i < StartingPositions.bases.GetLength(0); ++i)
@@ -110,7 +111,7 @@ public class ControllerTutorial : MonoBehaviour
             yield return null;
         }
         sideText.GetComponent<TextMeshProUGUI>().text = "Scegli dove muovere l'alfiere.";
-        CalculateMoves.foundCapture = false;
+        CalculateMoves.foundBase = false;
         while (!CalculateMoves.foundBase)
         {
             yield return null;
@@ -123,48 +124,58 @@ public class ControllerTutorial : MonoBehaviour
         };
         yield return new WaitForSeconds(2.5f);
         sideText.GetComponent<TextMeshProUGUI>().text = "Anche l'alfiere come tutti i pezzi può cattuare, prova a cattuare la donna.";
+        Vector2Int pos = Vector2Int.zero;
         if (BoardController.ChessBoardState[1, 1].piece != null)
         {
             BoardController.ChessBoardState[5, 5] = BoardController.ChessBoardState[7, 3];
             MovingAnimation.AnimateAndMovePiece(BoardController.ChessBoardState[7, 3].piece, BoardController.gridPositions[7, 3] + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[5, 5]);
+            pos = new Vector2Int(5, 5);
         }
         else if (BoardController.ChessBoardState[1, 3].piece != null)
         {
             BoardController.ChessBoardState[4, 6] = BoardController.ChessBoardState[7, 3];
             MovingAnimation.AnimateAndMovePiece(BoardController.ChessBoardState[7, 3].piece, BoardController.gridPositions[7, 3] + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[4, 6]);
+            pos = new Vector2Int(4, 6);
         }
         else if (BoardController.ChessBoardState[2, 0].piece != null)
         {
             BoardController.ChessBoardState[6, 4] = BoardController.ChessBoardState[7, 3];
             MovingAnimation.AnimateAndMovePiece(BoardController.ChessBoardState[7, 3].piece, BoardController.gridPositions[7, 3] + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[6, 4]);
+            pos = new Vector2Int(6, 4);
         }
         else if (BoardController.ChessBoardState[2, 4].piece != null)
         {
             BoardController.ChessBoardState[5, 1] = BoardController.ChessBoardState[7, 3];
             MovingAnimation.AnimateAndMovePiece(BoardController.ChessBoardState[7, 3].piece, BoardController.gridPositions[7, 3] + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[5, 1]);
+            pos = new Vector2Int(5, 1);
         }
         else if (BoardController.ChessBoardState[3, 5].piece != null)
         {
             BoardController.ChessBoardState[6, 2] = BoardController.ChessBoardState[7, 3];
             MovingAnimation.AnimateAndMovePiece(BoardController.ChessBoardState[7, 3].piece, BoardController.gridPositions[7, 3] + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[6, 2]);
+            pos = new Vector2Int(6, 2);
         }
         else if (BoardController.ChessBoardState[4, 6].piece != null)
         {
             BoardController.ChessBoardState[1, 3] = BoardController.ChessBoardState[7, 3];
             MovingAnimation.AnimateAndMovePiece(BoardController.ChessBoardState[7, 3].piece, BoardController.gridPositions[7, 3] + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[1, 3]);
+            pos = new Vector2Int(1, 3);
         }
         else if (BoardController.ChessBoardState[5, 7].piece != null)
         {
             BoardController.ChessBoardState[1, 3] = BoardController.ChessBoardState[7, 3];
             MovingAnimation.AnimateAndMovePiece(BoardController.ChessBoardState[7, 3].piece, BoardController.gridPositions[7, 3] + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[1, 3]);
+            pos = new Vector2Int(1, 3);
         }
         CalculateMoves.foundCapture = false;
-        while (!CalculateMoves.foundBase)
+        BoardController.ChessBoardState[7, 3] = BoardController.ChessBoardState[pos.x, pos.y];
+        while (!CalculateMoves.foundCapture)
         {
             yield return null;
         }
         sideText.GetComponent<TextMeshProUGUI>().text = "";
         yield return new WaitForSeconds(3f);
+        frontText.GetComponent<TextMeshProUGUI>().text = "Ora sai come si muove e come cattura un alfiere, procedi con il tutorial per imparare a muovere il cavallo.";
         frontText.SetActive(true);
         yield return new WaitForSeconds(1f);
         continua.SetActive(true);
@@ -174,6 +185,272 @@ public class ControllerTutorial : MonoBehaviour
             yield return null;
         }
         //////////////////////////////////////////////////////////////////knight
+        BoardController.ChessBoardState[0, 1] = new PieceState
+        {
+            piece = StartingPositions.white_knights[0],
+            pieceType = PieceType.knight,
+            postion = new Vector2Int(0, 1),
+            isWhite = true
+        };
+        frontText.SetActive(false);
+        continua.SetActive(false);
+        for (int i = 0; i < StartingPositions.bases.GetLength(0); ++i)
+        {
+            for (int j = 0; j < StartingPositions.bases.GetLength(1); ++j)
+            {
+                StartingPositions.bases[i, j].SetActive(false);
+                StartingPositions.emptyBases[i, j].SetActive(false);
+            }
+        }
+        StartingPositions.white_knights[0].SetActive(true);       
+        MovingAnimation.AnimateAndMovePiece(StartingPositions.black_queen, CalculateMoves.finalpos.transform.position + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[7, 3]);
+        BoardController.ChessBoardState[pos.x, pos.y] = emptyState;
+        StartingPositions.white_bishops[0].SetActive(false);
+        sideText.GetComponent<TextMeshProUGUI>().text = "Il cavallo si muove ad L in tutte le direzioni. Può scavalcare qualsiasi pezzo. Clicca sul cavallo.";
+        CalculateMoves.found = false;
+        while (!CalculateMoves.found)
+        {
+            yield return null;
+        }
+        sideText.GetComponent<TextMeshProUGUI>().text = "Ora prova a catturare la donna.";
+        CalculateMoves.foundCapture = false;
+        while (!CalculateMoves.foundCapture)
+        {
+            yield return null;
+        }
+        sideText.GetComponent<TextMeshProUGUI>().text = "";
+        yield return new WaitForSeconds(3f);
+        frontText.GetComponent<TextMeshProUGUI>().text = "Ora sai come si muove e come cattura il cavallo, procedi con il tutorial per imparare a muovere la torre.";
+        frontText.SetActive(true);
+        yield return new WaitForSeconds(1f);
+        continua.SetActive(true);
+        ready = false;
+        while (ready == false)
+        {
+            yield return null;
+        }
+        //////////////////////////////////////////////////////////////////rook
+        BoardController.ChessBoardState[0, 0] = new PieceState
+        {
+            piece = StartingPositions.white_rooks[0],
+            pieceType = PieceType.rook,
+            postion = new Vector2Int(0, 0),
+            isWhite = true
+        };
+        frontText.SetActive(false);
+        continua.SetActive(false);
+        for (int i = 0; i < StartingPositions.bases.GetLength(0); ++i)
+        {
+            for (int j = 0; j < StartingPositions.bases.GetLength(1); ++j)
+            {
+                StartingPositions.bases[i, j].SetActive(false);
+                StartingPositions.emptyBases[i, j].SetActive(false);
+            }
+        }
+        StartingPositions.white_rooks[0].SetActive(true);
+        BoardController.ChessBoardState[7, 3] = new PieceState
+        {
+            piece = StartingPositions.black_queen,
+            pieceType = PieceType.queen,
+            postion = new Vector2Int(7, 3),
+            isWhite = false
+        };
+        MovingAnimation.AnimateAndMovePiece(StartingPositions.black_queen, CalculateMoves.finalpos.transform.position + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[7, 3]);
+        StartingPositions.white_knights[0].SetActive(false);
+        sideText.GetComponent<TextMeshProUGUI>().text = "La torre si muove in verticale e in orizzontale. Clicca sulla torre.";
+        CalculateMoves.found = false;
+        while (!CalculateMoves.found)
+        {
+            yield return null;
+        }
+        sideText.GetComponent<TextMeshProUGUI>().text = "Prova a catturare la donna.";
+        CalculateMoves.foundBase = false;
+        while (!CalculateMoves.foundBase)
+        {
+            yield return null;
+        }
+        yield return new WaitForSeconds(2f);
+        MovingAnimation.AnimateAndMovePiece(StartingPositions.black_queen, BoardController.gridPositions[7, 3] + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[3, 7]);
+        BoardController.ChessBoardState[3, 7] = BoardController.ChessBoardState[7, 3];
+        BoardController.ChessBoardState[7, 3] = emptyState;
+        CalculateMoves.foundCapture = false;
+        while (!CalculateMoves.foundCapture)
+        {
+            yield return null;
+        }
+        sideText.GetComponent<TextMeshProUGUI>().text = "";
+        yield return new WaitForSeconds(3f);
+        frontText.GetComponent<TextMeshProUGUI>().text = "Ora sai come si muove e come cattura la torre, procedi con il tutorial per imparare a muovere la regina.";
+        frontText.SetActive(true);
+        yield return new WaitForSeconds(1f);
+        continua.SetActive(true);
+        ready = false;
+        while (ready == false)
+        {
+            yield return null;
+        }
+        //////////////////////////////////////////////////////////////////queen
+        CleanBoard();
+        BoardController.ChessBoardState[0, 3] = new PieceState
+        {
+            piece = StartingPositions.white_queen,
+            pieceType = PieceType.queen,
+            postion = new Vector2Int(0, 3),
+            isWhite = true
+        };
+        frontText.SetActive(false);
+        continua.SetActive(false);
+        for (int i = 0; i < StartingPositions.bases.GetLength(0); ++i)
+        {
+            for (int j = 0; j < StartingPositions.bases.GetLength(1); ++j)
+            {
+                StartingPositions.bases[i, j].SetActive(false);
+                StartingPositions.emptyBases[i, j].SetActive(false);
+            }
+        }      
+        StartingPositions.white_queen.SetActive(true);
+        BoardController.ChessBoardState[7, 3] = new PieceState
+        {
+            piece = StartingPositions.black_queen,
+            pieceType = PieceType.queen,
+            postion = new Vector2Int(7, 3),
+            isWhite = false
+        };
+        MovingAnimation.AnimateAndMovePiece(StartingPositions.black_queen, CalculateMoves.finalpos.transform.position + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[7, 3]);
+        StartingPositions.white_rooks[0].SetActive(false);
+        sideText.GetComponent<TextMeshProUGUI>().text = "La regina si muove in tutte le direzioni: in diagonale come l'alfiere e in orizzontale e verticale come la torre. Clicca sulla regina.";
+        BoardController.ChessBoardState[5, 5] = BoardController.ChessBoardState[7, 3];
+        BoardController.ChessBoardState[7, 3] = emptyState;
+        CalculateMoves.found = false;
+        while (!CalculateMoves.found)
+        {
+            yield return null;
+        }
+        sideText.GetComponent<TextMeshProUGUI>().text = "Prova a catturare la regina avversaria.";
+        MovingAnimation.AnimateAndMovePiece(StartingPositions.black_queen, BoardController.gridPositions[7, 3] + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[5, 5]);
+        CalculateMoves.foundCapture = false;
+        while (!CalculateMoves.foundCapture)
+        {
+            yield return null;
+        }
+        sideText.GetComponent<TextMeshProUGUI>().text = "";
+        yield return new WaitForSeconds(3f);
+        frontText.GetComponent<TextMeshProUGUI>().text = "Ora sai come si muove e come cattura la regina, procedi con il tutorial per imparare a muovere il re.";
+        frontText.SetActive(true);
+        yield return new WaitForSeconds(1f);
+        continua.SetActive(true);
+        ready = false;
+        while (ready == false)
+        {
+            yield return null;
+        }
+        //////////////////////////////////////////////////////////////////re
+        CleanBoard();
+        BoardController.ChessBoardState[0, 4] = new PieceState
+        {
+            piece = StartingPositions.white_king,
+            pieceType = PieceType.king,
+            postion = new Vector2Int(0, 4),
+            isWhite = true
+        };
+        frontText.SetActive(false);
+        continua.SetActive(false);
+        for (int i = 0; i < StartingPositions.bases.GetLength(0); ++i)
+        {
+            for (int j = 0; j < StartingPositions.bases.GetLength(1); ++j)
+            {
+                StartingPositions.bases[i, j].SetActive(false);
+                StartingPositions.emptyBases[i, j].SetActive(false);
+            }
+        }
+        StartingPositions.white_king.SetActive(true);
+        BoardController.ChessBoardState[7, 3] = new PieceState
+        {
+            piece = StartingPositions.black_queen,
+            pieceType = PieceType.queen,
+            postion = new Vector2Int(7, 3),
+            isWhite = false
+        };
+        MovingAnimation.AnimateAndMovePiece(StartingPositions.black_queen, CalculateMoves.finalpos.transform.position + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[7, 3]);
+        StartingPositions.white_queen.SetActive(false);
+        sideText.GetComponent<TextMeshProUGUI>().text = "Il re è l'obiettivo da catturare per poter vincere la partita. Si muove in tutte le direzioni ma solo di una casella. Clicca sul re.";
+        BoardController.ChessBoardState[5, 5] = emptyState;
+        CalculateMoves.found = false;
+        while (!CalculateMoves.found)
+        {
+            yield return null;
+        }
+        sideText.GetComponent<TextMeshProUGUI>().text = "Prova a catturare la regina.";
+        CalculateMoves.foundBase = false;
+        while (!CalculateMoves.foundBase)
+        {
+            yield return null;
+        }
+        MovingAnimation.AnimateAndMovePiece(StartingPositions.black_queen, BoardController.gridPositions[7, 3] + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[3, 3]);
+        BoardController.ChessBoardState[3, 3] = BoardController.ChessBoardState[7, 3];
+        BoardController.ChessBoardState[7, 3] = emptyState;
+        CalculateMoves.foundCapture = false;
+        while (!CalculateMoves.foundCapture)
+        {
+            yield return null;
+        }
+        sideText.GetComponent<TextMeshProUGUI>().text = "";
+        yield return new WaitForSeconds(3f);
+        frontText.GetComponent<TextMeshProUGUI>().text = "Ora sai come si muove e come cattura il re, procedi con il tutorial per imparare l'arrocco.";
+        frontText.SetActive(true);
+        yield return new WaitForSeconds(1f);
+        continua.SetActive(true);
+        ready = false;
+        while (ready == false)
+        {
+            yield return null;
+        }
+        //////////////////////////////////////////////////////////////////arrocco
+        CleanBoard();
+        BoardController.ChessBoardState[0, 4] = new PieceState
+        {
+            piece = StartingPositions.white_king,
+            pieceType = PieceType.king,
+            postion = new Vector2Int(0, 4),
+            isWhite = true
+        };
+        frontText.SetActive(false);
+        continua.SetActive(false);
+        for (int i = 0; i < StartingPositions.bases.GetLength(0); ++i)
+        {
+            for (int j = 0; j < StartingPositions.bases.GetLength(1); ++j)
+            {
+                StartingPositions.bases[i, j].SetActive(false);
+                StartingPositions.emptyBases[i, j].SetActive(false);
+            }
+        }
+        StartingPositions.white_king.SetActive(true);
+        BoardController.ChessBoardState[3, 3] = emptyState;
+        MovingAnimation.AnimateAndMovePiece(StartingPositions.white_king, BoardController.gridPositions[3, 3] + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[0, 4]);
+        StartingPositions.black_queen.SetActive(false);
+        BoardController.ChessBoardState[0, 7] = new PieceState
+        {
+            piece = StartingPositions.white_rooks[1],
+            pieceType = PieceType.rook,
+            postion = new Vector2Int(0, 7),
+            isWhite = true
+        };
+        CalculateMoves.movedKing[0] = false;
+        StartingPositions.white_rooks[1].SetActive(true);
+        sideText.GetComponent<TextMeshProUGUI>().text = "L'arrocco è una mossa difensiva per proteggere il re. Consiste in uno scambio di posizioni tra il re e una delle torri.";
+        CalculateMoves.found = false;
+        while (!CalculateMoves.found)
+        {
+            yield return null;
+        }
+        sideText.GetComponent<TextMeshProUGUI>().text = "Per arroccare è necesario che nè il re e nè la torre da arroccare abbiano effettuato alcuna mossa.";
+        CalculateMoves.foundBase = false;
+        while (!CalculateMoves.foundBase)
+        {
+            yield return null;
+        }
+        yield return new WaitForSeconds(5f);
+        BoardController.ResetChessBoard();
     }
 
 

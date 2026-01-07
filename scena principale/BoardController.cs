@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -8,17 +9,20 @@ public class BoardController : MonoBehaviour
 {
 	private StartingPositions StartingPositions;
     private CalculateMoves CalculateMoves;
-	public PieceState[,] ChessBoardState = new PieceState[8, 8];
+    private MovingAnimation MovingAnimation;
+    public PieceState[,] ChessBoardState = new PieceState[8, 8];
     private const int board_Size = 8;
     public GameObject visualBoardPlane;
     public Vector3[,] gridPositions = new Vector3[board_Size, board_Size];
     public GameObject clickedobject;
     public bool blackTurn = false;
+    public bool enable = false; 
 
     private void Awake()
     {
 		StartingPositions = GetComponent<StartingPositions>();
         CalculateMoves = GetComponent<CalculateMoves>();
+        MovingAnimation = GetComponent<MovingAnimation>();
     }
 
     public void Start()
@@ -52,25 +56,28 @@ public class BoardController : MonoBehaviour
     }
     public void OnSelect(InputAction.CallbackContext context)
     {
-        if (context.performed)
+        if (enable)
         {
-            clickedobject = HandleMouseClick();
-            if (clickedobject != null)
+            if (context.performed)
             {
-                for (int i = 0; i < StartingPositions.bases.GetLength(0); ++i)
+                clickedobject = HandleMouseClick();
+                if (clickedobject != null)
                 {
-                    for (int j = 0; j < StartingPositions.bases.GetLength(1); ++j)
+                    for (int i = 0; i < StartingPositions.bases.GetLength(0); ++i)
                     {
-                        StartingPositions.bases[i, j].SetActive(false);
-                        StartingPositions.emptyBases[i, j].SetActive(false);
+                        for (int j = 0; j < StartingPositions.bases.GetLength(1); ++j)
+                        {
+                            StartingPositions.bases[i, j].SetActive(false);
+                            StartingPositions.emptyBases[i, j].SetActive(false);
+                        }
                     }
+                    CalculateMoves.Calculate();
+                    ShowMoves();
                 }
-                CalculateMoves.Calculate();
-                ShowMoves();         
-            }
+            }         
         }
     }
-    private GameObject HandleMouseClick()
+    public GameObject HandleMouseClick()
     {
         if (Mouse.current == null) return null;
         Vector2 mousePosition = Mouse.current.position.ReadValue();
@@ -105,6 +112,42 @@ public class BoardController : MonoBehaviour
         }
     }
 
+    public void ResetChessBoard()
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            StartingPositions.white_ponds[i].SetActive(true);
+            StartingPositions.black_ponds[i].SetActive(true);
+        }
+        for (int i = 0; i < 2; i++)
+        {
+            StartingPositions.white_rooks[i].SetActive(true);
+            StartingPositions.white_knights[i].SetActive(true);
+            StartingPositions.white_bishops[i].SetActive(true);
+            StartingPositions.black_rooks[i].SetActive(true);
+            StartingPositions.black_knights[i].SetActive(true);
+            StartingPositions.black_bishops[i].SetActive(true);
+        }
+        StartingPositions.white_queen.SetActive(true);
+        StartingPositions.black_queen.SetActive(true);
+        StartingPositions.white_king.SetActive(true);
+        StartingPositions.black_king.SetActive(true);
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                ChessBoardState[i, j] = new PieceState();
+            }
+        }
+        GenerateLogicalGrid();
+        StartingPositions.SetPositions();
+        for (int i = 0; i < 4; i++)
+        {
+            CalculateMoves.movedRooks[i] = false;
+            CalculateMoves.movedKing[i / 2] = false;
+        }
+        LogBoardState();
+    }
 
     private void OnDrawGizmos()
     {
