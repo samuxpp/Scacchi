@@ -22,6 +22,8 @@ public class CalculateMoves : MonoBehaviour
     public bool found = false;
     public bool foundBase = false;
     public bool foundCapture = false;
+    public bool foundPromotion = false;
+    bool isItsTurn = false;
     public PieceState emptyState = new PieceState();
 
     private void Awake()
@@ -35,7 +37,7 @@ public class CalculateMoves : MonoBehaviour
 
     private void Pawn(int i, int j)
     {
-        if (BoardController.ChessBoardState[i, j].isWhite == true)
+        if (BoardController.ChessBoardState[i, j].isWhite == true && !BoardController.blackTurn)
         {
             if (i + 1 <= 7)
             {
@@ -101,7 +103,7 @@ public class CalculateMoves : MonoBehaviour
             {
                 legalMoves.Add((i + k + 1, j));
             }
-            else if (i + k + 1 <= 7 && BoardController.ChessBoardState[i + k + 1, j].piece != null && BoardController.ChessBoardState[i + k + 1, j].isWhite == false && BoardController.ChessBoardState[i, j].isWhite == true)
+            else if (i + k + 1 <= 7 && BoardController.ChessBoardState[i + k + 1, j].piece != null && BoardController.ChessBoardState[i + k + 1, j].isWhite == false && BoardController.ChessBoardState[i, j].isWhite == true && !BoardController.blackTurn)
             {
                 legalCaptures.Add((i + k + 1, j));
                 break;
@@ -122,7 +124,7 @@ public class CalculateMoves : MonoBehaviour
             {
                 legalMoves.Add((i - k - 1, j));
             }
-            else if (i - k - 1 >= 0 && BoardController.ChessBoardState[i - k - 1, j].piece != null && BoardController.ChessBoardState[i - k - 1, j].isWhite == false && BoardController.ChessBoardState[i, j].isWhite == true)
+            else if (i - k - 1 >= 0 && BoardController.ChessBoardState[i - k - 1, j].piece != null && BoardController.ChessBoardState[i - k - 1, j].isWhite == false && BoardController.ChessBoardState[i, j].isWhite == true && !BoardController.blackTurn)
             {
                 legalCaptures.Add((i - k - 1, j));
                 break;
@@ -143,7 +145,7 @@ public class CalculateMoves : MonoBehaviour
             {
                 legalMoves.Add((i, j + k + 1));
             }
-            else if (j + k + 1 <= 7 && BoardController.ChessBoardState[i, j + k + 1].piece != null && BoardController.ChessBoardState[i, j + k + 1].isWhite == false && BoardController.ChessBoardState[i, j].isWhite == true)
+            else if (j + k + 1 <= 7 && BoardController.ChessBoardState[i, j + k + 1].piece != null && BoardController.ChessBoardState[i, j + k + 1].isWhite == false && BoardController.ChessBoardState[i, j].isWhite == true && !BoardController.blackTurn)
             {
                 legalCaptures.Add((i, j + k + 1));
                 break;
@@ -164,7 +166,7 @@ public class CalculateMoves : MonoBehaviour
             {
                 legalMoves.Add((i, j - k - 1));
             }
-            else if (j - k - 1 >= 0 && BoardController.ChessBoardState[i, j - k - 1].piece != null && BoardController.ChessBoardState[i, j - k - 1].isWhite == false && BoardController.ChessBoardState[i, j].isWhite == true)
+            else if (j - k - 1 >= 0 && BoardController.ChessBoardState[i, j - k - 1].piece != null && BoardController.ChessBoardState[i, j - k - 1].isWhite == false && BoardController.ChessBoardState[i, j].isWhite == true && !BoardController.blackTurn)
             {
                 legalCaptures.Add((i, j - k - 1));
                 break;
@@ -178,7 +180,7 @@ public class CalculateMoves : MonoBehaviour
             {
                 break;
             }
-        }
+        }   
     }
     private void Bishop(int i, int j)
     {
@@ -188,7 +190,7 @@ public class CalculateMoves : MonoBehaviour
             {
                 legalMoves.Add((i + k + 1, j + k + 1));
             }
-            else if (i + k + 1 <= 7 && j + k + 1 <= 7 && BoardController.ChessBoardState[i + k + 1, j + k + 1].piece != null && BoardController.ChessBoardState[i + k + 1, j + k + 1].isWhite == false && BoardController.ChessBoardState[i, j].isWhite == true)
+            else if (i + k + 1 <= 7 && j + k + 1 <= 7 && BoardController.ChessBoardState[i + k + 1, j + k + 1].piece != null && BoardController.ChessBoardState[i + k + 1, j + k + 1].isWhite == false && BoardController.ChessBoardState[i, j].isWhite == true && !BoardController.blackTurn)
             {
                 legalCaptures.Add((i + k + 1, j + k + 1));
                 break;
@@ -209,7 +211,7 @@ public class CalculateMoves : MonoBehaviour
             {
                 legalMoves.Add((i + k + 1, j - k - 1));
             }
-            else if (i + k + 1 <= 7 && j - k - 1 >= 0 && BoardController.ChessBoardState[i + k + 1, j - k - 1].piece != null && BoardController.ChessBoardState[i + k + 1, j - k - 1].isWhite == false && BoardController.ChessBoardState[i, j].isWhite == true)
+            else if (i + k + 1 <= 7 && j - k - 1 >= 0 && BoardController.ChessBoardState[i + k + 1, j - k - 1].piece != null && BoardController.ChessBoardState[i + k + 1, j - k - 1].isWhite == false && BoardController.ChessBoardState[i, j].isWhite == true && !BoardController.blackTurn)
             {
                 legalCaptures.Add((i + k + 1, j - k - 1));
                 break;
@@ -230,7 +232,7 @@ public class CalculateMoves : MonoBehaviour
             {
                 legalMoves.Add((i - k - 1, j - k - 1));
             }
-            else if (i - k - 1 >= 0 && j - k - 1 >= 0 && BoardController.ChessBoardState[i - k - 1, j - k - 1].piece != null && BoardController.ChessBoardState[i - k - 1, j - k - 1].isWhite == false && BoardController.ChessBoardState[i, j].isWhite == true)
+            else if (i - k - 1 >= 0 && j - k - 1 >= 0 && BoardController.ChessBoardState[i - k - 1, j - k - 1].piece != null && BoardController.ChessBoardState[i - k - 1, j - k - 1].isWhite == false && BoardController.ChessBoardState[i, j].isWhite == true && !BoardController.blackTurn)
             {
                 legalCaptures.Add((i - k - 1, j - k - 1));
                 break;
@@ -251,7 +253,7 @@ public class CalculateMoves : MonoBehaviour
             {
                 legalMoves.Add((i - k - 1, j + k + 1));
             }
-            else if (i - k - 1 >= 0 && j + k + 1 <= 7 && BoardController.ChessBoardState[i - k - 1, j + k + 1].piece != null && BoardController.ChessBoardState[i - k - 1, j + k + 1].isWhite == false && BoardController.ChessBoardState[i, j].isWhite == true)
+            else if (i - k - 1 >= 0 && j + k + 1 <= 7 && BoardController.ChessBoardState[i - k - 1, j + k + 1].piece != null && BoardController.ChessBoardState[i - k - 1, j + k + 1].isWhite == false && BoardController.ChessBoardState[i, j].isWhite == true && !BoardController.blackTurn)
             {
                 legalCaptures.Add((i - k - 1, j + k + 1));
                 break;
@@ -265,13 +267,12 @@ public class CalculateMoves : MonoBehaviour
             {
                 break;
             }
-        }
+        }      
     }
     private void Knight(int i, int j)
     {
         int[] dx = { 1, 1, -1, -1, 2, 2, -2, -2 };
         int[] dy = { 2, -2, 2, -2, 1, -1, 1, -1 };
-
         for (int k = 0; k < 8; k++)
         {
             int new_i = i + dx[k];
@@ -283,7 +284,7 @@ public class CalculateMoves : MonoBehaviour
                 {
                     legalMoves.Add((new_i, new_j));
                 }
-                else if (BoardController.ChessBoardState[new_i, new_j].piece != null && BoardController.ChessBoardState[new_i, new_j].isWhite == false && BoardController.ChessBoardState[i, j].isWhite == true)
+                else if (BoardController.ChessBoardState[new_i, new_j].piece != null && BoardController.ChessBoardState[new_i, new_j].isWhite == false && BoardController.ChessBoardState[i, j].isWhite == true && !BoardController.blackTurn)
                 {
                     legalCaptures.Add((new_i, new_j));
                 }
@@ -311,7 +312,7 @@ public class CalculateMoves : MonoBehaviour
                 {
                     legalMoves.Add((new_i, new_j));
                 }
-                else if (BoardController.ChessBoardState[new_i, new_j].piece != null && BoardController.ChessBoardState[new_i, new_j].isWhite == false && BoardController.ChessBoardState[i, j].isWhite == true)
+                else if (BoardController.ChessBoardState[new_i, new_j].piece != null && BoardController.ChessBoardState[new_i, new_j].isWhite == false && BoardController.ChessBoardState[i, j].isWhite == true && !BoardController.blackTurn)
                 {
                     legalCaptures.Add((new_i, new_j));
                 }
@@ -323,7 +324,7 @@ public class CalculateMoves : MonoBehaviour
             //castle
             for (int n = 0; n < 2; n++)
             {
-                if (BoardController.ChessBoardState[i, j].isWhite && i == 0 && j == 4 && BoardController.ChessBoardState[0, dn[n]].piece == null && movedRooks[dl[n]] == false && BoardController.ChessBoardState[0, dk[n]].pieceType == PieceType.rook && movedKing[0] == false)
+                if (BoardController.ChessBoardState[i, j].isWhite && !BoardController.blackTurn && i == 0 && j == 4 && BoardController.ChessBoardState[0, dn[n]].piece == null && movedRooks[dl[n]] == false && BoardController.ChessBoardState[0, dk[n]].pieceType == PieceType.rook && movedKing[0] == false)
                 {
                     legalMoves.Add((0, dn[n]));
                 }
@@ -358,35 +359,37 @@ public class CalculateMoves : MonoBehaviour
                 if (BoardController.ChessBoardState[i, j].piece == BoardController.clickedobject && CheckCaptures(BoardController.clickedobject) == false)  //new
                 {
                     ResetY();
-                    if (!(!BoardController.ChessBoardState[i, j].isWhite && !BoardController.blackTurn))
+                    isItsTurn = (BoardController.ChessBoardState[i, j].isWhite && !BoardController.blackTurn) || (!BoardController.ChessBoardState[i, j].isWhite && BoardController.blackTurn);
+                    
+                    if (isItsTurn)
                     {
                         BoardController.ChessBoardState[i, j].piece.transform.position += new Vector3(0f, 0.7f, 0f);
+                        if (BoardController.ChessBoardState[i, j].pieceType == PieceType.pawn)     //pawn
+                        {
+                            Pawn(i, j);
+                        }
+                        else if (BoardController.ChessBoardState[i, j].pieceType == PieceType.rook)    //rook
+                        {
+                            Rook(i, j);
+                        }
+                        else if (BoardController.ChessBoardState[i, j].pieceType == PieceType.bishop)    //bishop
+                        {
+                            Bishop(i, j);
+                        }
+                        else if (BoardController.ChessBoardState[i, j].pieceType == PieceType.queen)    //queen
+                        {
+                            Rook(i, j);
+                            Bishop(i, j);
+                        }
+                        else if (BoardController.ChessBoardState[i, j].pieceType == PieceType.knight)    //knight
+                        {
+                            Knight(i, j);
+                        }
+                        else if (BoardController.ChessBoardState[i, j].pieceType == PieceType.king)    //king
+                        {
+                            King(i, j);
+                        }
                     }                   
-                    if (BoardController.ChessBoardState[i, j].pieceType == PieceType.pawn)     //pawn
-                    {
-                        Pawn(i, j);
-                    }
-                    else if (BoardController.ChessBoardState[i, j].pieceType == PieceType.rook)    //rook
-                    {
-                        Rook(i, j);
-                    }
-                    else if (BoardController.ChessBoardState[i, j].pieceType == PieceType.bishop)    //bishop
-                    {
-                        Bishop(i, j);
-                    }
-                    else if (BoardController.ChessBoardState[i, j].pieceType == PieceType.queen)    //queen
-                    {
-                        Rook(i, j);
-                        Bishop(i, j);
-                    }
-                    else if (BoardController.ChessBoardState[i, j].pieceType == PieceType.knight)    //knight
-                    {
-                        Knight(i, j);
-                    }
-                    else if (BoardController.ChessBoardState[i, j].pieceType == PieceType.king)    //king
-                    {
-                        King(i, j);
-                    }
                     savedCaptures = new List<(int X, int Y)>(legalCaptures);
                     savedChessBoardState = BoardController.ChessBoardState[i, j];
                     savedGridPosition = BoardController.gridPositions[i, j];
@@ -446,13 +449,13 @@ public class CalculateMoves : MonoBehaviour
                     else if (savedChessBoardState.piece == StartingPositions.black_king)
                     {
                         movedKing[1] = true;
-                    }
-                    BoardController.ChessBoardState[i, j] = savedChessBoardState;
+                    }                
                     BoardController.ChessBoardState[i, j].postion = new Vector2Int(i, j);
                     BoardController.ChessBoardState[savedChessBoardState.postion.x, savedChessBoardState.postion.y] = emptyState;
                     savedCaptures.Clear();
                     found = true;
                     foundBase = true;
+                    BoardController.ChessBoardState[i, j] = savedChessBoardState;
                 }
                 else if (CheckCapturesPos(BoardController.clickedobject, i, j))  /////////captures
                 {
@@ -479,13 +482,13 @@ public class CalculateMoves : MonoBehaviour
                     else if (savedChessBoardState.piece == StartingPositions.black_king)
                     {
                         movedKing[1] = true;
-                    }
-                    BoardController.ChessBoardState[i, j] = savedChessBoardState;
+                    }                  
                     BoardController.ChessBoardState[i, j].postion = new Vector2Int(i, j);
                     BoardController.ChessBoardState[savedChessBoardState.postion.x, savedChessBoardState.postion.y] = emptyState;
                     savedCaptures.Clear();
                     found = true;
                     foundCapture = true;
+                    BoardController.ChessBoardState[i, j] = savedChessBoardState;
                 }
                 if (BoardController.ChessBoardState[i, j].piece == savedChessBoardState.piece && savedChessBoardState.pieceType == PieceType.pawn && i == 7 && savedChessBoardState.isWhite)
                 {

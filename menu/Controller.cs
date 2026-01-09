@@ -33,6 +33,13 @@ public class Controller : MonoBehaviour
         canvas.SetActive(false);
         StartCoroutine(MovePieceRoutineAP(pos, new Vector3(0, 7.07f, -7.45f)));
     }
+    public void Puzzle()
+    {
+        MenuOrbit.orbit = false;
+        pos = mainCam.transform.position;
+        canvas.SetActive(false);
+        StartCoroutine(MovePieceRoutinePuzzle(pos, new Vector3(0, 7.07f, -7.45f)));
+    }
 
     private IEnumerator MovePieceRoutineTUT(Vector3 startPos, Vector3 endPos)
     {
@@ -51,7 +58,7 @@ public class Controller : MonoBehaviour
         }
         cameraTransform.position = endPos;
         pivotTransform.rotation = Quaternion.identity;
-        SceneManager.LoadScene(2);
+        SceneManager.LoadScene(1);
     }
     private IEnumerator MovePieceRoutineAP(Vector3 startPos, Vector3 endPos)
     {
@@ -70,6 +77,25 @@ public class Controller : MonoBehaviour
         }
         cameraTransform.position = endPos;
         pivotTransform.rotation = Quaternion.identity;
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(2);
+    }
+    private IEnumerator MovePieceRoutinePuzzle(Vector3 startPos, Vector3 endPos)
+    {
+        float elapsedTime = 0f;
+        Quaternion startRotation = pivot.transform.rotation;
+        Transform cameraTransform = mainCamera.transform;
+        Transform pivotTransform = pivot.transform;
+        while (elapsedTime < moveDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsedTime / moveDuration);
+            float smoothT = t * t * (3f - 2f * t);
+            cameraTransform.position = Vector3.Lerp(startPos, endPos, t);
+            pivotTransform.rotation = Quaternion.Slerp(startRotation, Quaternion.identity, smoothT);
+            yield return null;
+        }
+        cameraTransform.position = endPos;
+        pivotTransform.rotation = Quaternion.identity;
+        SceneManager.LoadScene(3);
     }
 }

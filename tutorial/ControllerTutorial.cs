@@ -3,7 +3,8 @@ using System.ComponentModel;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem.LowLevel;
-using UnityEngine.UIElements;
+using UnityEngine.SceneManagement;
+
 public class ControllerTutorial : MonoBehaviour
 {
     private StartingPositions StartingPositions;
@@ -15,6 +16,7 @@ public class ControllerTutorial : MonoBehaviour
     public GameObject sideText;
     public GameObject frontText;
     public GameObject continua;
+    public GameObject panel;
     private bool ready = false;
     public void Awake()
     {
@@ -24,19 +26,21 @@ public class ControllerTutorial : MonoBehaviour
         CalculateMoves = GetComponent<CalculateMoves>();
         MovingAnimation = GetComponent<MovingAnimation>();
     }
-    void Start()
+    public void Start()
     {
         StartCoroutine(SetUpBoardRoutine());
         StartCoroutine(TUT());
     }
 
-    public void Continua()
+    public void Continue()
     {
         ready = true;
     }
 
     private IEnumerator TUT()
     {
+        yield return new WaitUntil(() => BoardController.isInitialized == true);
+        BoardController.enable = true;
         BoardController.blackTurn = false;
         sideText.SetActive(true);
         frontText.SetActive(false);
@@ -56,11 +60,13 @@ public class ControllerTutorial : MonoBehaviour
         {
             BoardController.ChessBoardState[3, 3] = BoardController.ChessBoardState[6, 3];
             MovingAnimation.AnimateAndMovePiece(BoardController.ChessBoardState[6, 3].piece, BoardController.gridPositions[6, 3] + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[3, 3]);
+            
         }
         else if (BoardController.ChessBoardState[3, 4].piece != null)
         {
             BoardController.ChessBoardState[4, 3] = BoardController.ChessBoardState[6, 3];
             MovingAnimation.AnimateAndMovePiece(BoardController.ChessBoardState[6, 3].piece, BoardController.gridPositions[6, 3] + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[4, 3]);
+            
         }
         sideText.GetComponent<TextMeshProUGUI>().text = "Il pedone può catturare qualsiasi pezzo ma può farlo soltanto in diagonale. Clicca sul pedone";
         CalculateMoves.found = false;
@@ -73,8 +79,17 @@ public class ControllerTutorial : MonoBehaviour
         while (!CalculateMoves.foundCapture)
         {
             yield return null;
+            if (BoardController.ChessBoardState[2, 4].piece != null)
+            {
+                StartingPositions.bases[3, 4].SetActive(false);
+            }
+            else if (BoardController.ChessBoardState[3, 4].piece != null)
+            {
+                StartingPositions.bases[4, 4].SetActive(false);
+            }
         }
         sideText.GetComponent<TextMeshProUGUI>().text = "";
+        panel.SetActive(false);
         yield return new WaitForSeconds(3f);
         frontText.SetActive(true);
         yield return new WaitForSeconds(1f);
@@ -104,6 +119,7 @@ public class ControllerTutorial : MonoBehaviour
                 StartingPositions.emptyBases[i, j].SetActive(false);
             }
         }
+        panel.SetActive(true);
         sideText.GetComponent<TextMeshProUGUI>().text = "L'alfiere si muove solo in diagonale in ambedue le direzioni. Clicca sull'alfiere.";
         CalculateMoves.found = false;
         while (!CalculateMoves.found)
@@ -175,6 +191,7 @@ public class ControllerTutorial : MonoBehaviour
         }
         sideText.GetComponent<TextMeshProUGUI>().text = "";
         yield return new WaitForSeconds(3f);
+        panel.SetActive(false);
         frontText.GetComponent<TextMeshProUGUI>().text = "Ora sai come si muove e come cattura un alfiere, procedi con il tutorial per imparare a muovere il cavallo.";
         frontText.SetActive(true);
         yield return new WaitForSeconds(1f);
@@ -185,6 +202,7 @@ public class ControllerTutorial : MonoBehaviour
             yield return null;
         }
         //////////////////////////////////////////////////////////////////knight
+        CleanBoard();
         BoardController.ChessBoardState[0, 1] = new PieceState
         {
             piece = StartingPositions.white_knights[0],
@@ -194,6 +212,7 @@ public class ControllerTutorial : MonoBehaviour
         };
         frontText.SetActive(false);
         continua.SetActive(false);
+        panel.SetActive(true);
         for (int i = 0; i < StartingPositions.bases.GetLength(0); ++i)
         {
             for (int j = 0; j < StartingPositions.bases.GetLength(1); ++j)
@@ -202,9 +221,15 @@ public class ControllerTutorial : MonoBehaviour
                 StartingPositions.emptyBases[i, j].SetActive(false);
             }
         }
+        BoardController.ChessBoardState[7, 3] = new PieceState
+        {
+            piece = StartingPositions.black_queen,
+            pieceType = PieceType.queen,
+            postion = new Vector2Int(7, 3),
+            isWhite = false
+        };
         StartingPositions.white_knights[0].SetActive(true);       
         MovingAnimation.AnimateAndMovePiece(StartingPositions.black_queen, CalculateMoves.finalpos.transform.position + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[7, 3]);
-        BoardController.ChessBoardState[pos.x, pos.y] = emptyState;
         StartingPositions.white_bishops[0].SetActive(false);
         sideText.GetComponent<TextMeshProUGUI>().text = "Il cavallo si muove ad L in tutte le direzioni. Può scavalcare qualsiasi pezzo. Clicca sul cavallo.";
         CalculateMoves.found = false;
@@ -220,6 +245,7 @@ public class ControllerTutorial : MonoBehaviour
         }
         sideText.GetComponent<TextMeshProUGUI>().text = "";
         yield return new WaitForSeconds(3f);
+        panel.SetActive(false);
         frontText.GetComponent<TextMeshProUGUI>().text = "Ora sai come si muove e come cattura il cavallo, procedi con il tutorial per imparare a muovere la torre.";
         frontText.SetActive(true);
         yield return new WaitForSeconds(1f);
@@ -237,6 +263,7 @@ public class ControllerTutorial : MonoBehaviour
             postion = new Vector2Int(0, 0),
             isWhite = true
         };
+        panel.SetActive(true);
         frontText.SetActive(false);
         continua.SetActive(false);
         for (int i = 0; i < StartingPositions.bases.GetLength(0); ++i)
@@ -280,6 +307,7 @@ public class ControllerTutorial : MonoBehaviour
         }
         sideText.GetComponent<TextMeshProUGUI>().text = "";
         yield return new WaitForSeconds(3f);
+        panel.SetActive(false);
         frontText.GetComponent<TextMeshProUGUI>().text = "Ora sai come si muove e come cattura la torre, procedi con il tutorial per imparare a muovere la regina.";
         frontText.SetActive(true);
         yield return new WaitForSeconds(1f);
@@ -298,6 +326,7 @@ public class ControllerTutorial : MonoBehaviour
             postion = new Vector2Int(0, 3),
             isWhite = true
         };
+        panel.SetActive(true);
         frontText.SetActive(false);
         continua.SetActive(false);
         for (int i = 0; i < StartingPositions.bases.GetLength(0); ++i)
@@ -335,6 +364,7 @@ public class ControllerTutorial : MonoBehaviour
         }
         sideText.GetComponent<TextMeshProUGUI>().text = "";
         yield return new WaitForSeconds(3f);
+        panel.SetActive(false);
         frontText.GetComponent<TextMeshProUGUI>().text = "Ora sai come si muove e come cattura la regina, procedi con il tutorial per imparare a muovere il re.";
         frontText.SetActive(true);
         yield return new WaitForSeconds(1f);
@@ -353,6 +383,7 @@ public class ControllerTutorial : MonoBehaviour
             postion = new Vector2Int(0, 4),
             isWhite = true
         };
+        panel.SetActive(true);
         frontText.SetActive(false);
         continua.SetActive(false);
         for (int i = 0; i < StartingPositions.bases.GetLength(0); ++i)
@@ -396,6 +427,7 @@ public class ControllerTutorial : MonoBehaviour
         }
         sideText.GetComponent<TextMeshProUGUI>().text = "";
         yield return new WaitForSeconds(3f);
+        panel.SetActive(false);
         frontText.GetComponent<TextMeshProUGUI>().text = "Ora sai come si muove e come cattura il re, procedi con il tutorial per imparare l'arrocco.";
         frontText.SetActive(true);
         yield return new WaitForSeconds(1f);
@@ -414,6 +446,7 @@ public class ControllerTutorial : MonoBehaviour
             postion = new Vector2Int(0, 4),
             isWhite = true
         };
+        panel.SetActive(true);
         frontText.SetActive(false);
         continua.SetActive(false);
         for (int i = 0; i < StartingPositions.bases.GetLength(0); ++i)
@@ -444,13 +477,71 @@ public class ControllerTutorial : MonoBehaviour
             yield return null;
         }
         sideText.GetComponent<TextMeshProUGUI>().text = "Per arroccare è necesario che nè il re e nè la torre da arroccare abbiano effettuato alcuna mossa.";
+        int[,] coords = { { 0, 5 }, { 1, 5 }, { 1, 4 }, { 1, 3 }, { 0, 3 } };
+        CalculateMoves.foundBase = false;
+        while (!CalculateMoves.foundBase)
+        {
+            for (int i = 0; i < coords.GetLength(0); i++)
+            {
+                StartingPositions.bases[coords[i, 0], coords[i, 1]].SetActive(false);
+            }
+            yield return null;
+        }          
+        sideText.GetComponent<TextMeshProUGUI>().text = "";
+        yield return new WaitForSeconds(3f);
+        panel.SetActive(false);
+        frontText.GetComponent<TextMeshProUGUI>().text = "Ora sai come funziona l'arrocco, procedi con il tutorial per imparare la promozione del pedone";
+        frontText.SetActive(true);
+        yield return new WaitForSeconds(1f);
+        continua.SetActive(true);
+        ready = false;
+        while (ready == false)
+        {
+            yield return null;
+        }
+        //////////////////////////////////////////////////////////////////promozione  
+        BoardController.ChessBoardState[0, 6] = emptyState;
+        BoardController.ChessBoardState[0, 5] = emptyState;
+        StartingPositions.white_king.SetActive(false);
+        StartingPositions.white_rooks[1].SetActive(false);
+        BoardController.ChessBoardState[6, 4] = new PieceState
+        {
+            piece = StartingPositions.white_ponds[4],
+            pieceType = PieceType.pawn,
+            postion = new Vector2Int(6, 4),
+            isWhite = true
+        };
+        StartingPositions.white_ponds[4].transform.position = BoardController.gridPositions[6, 4];
+        StartingPositions.white_ponds[4].SetActive(true);
+        panel.SetActive(true);
+        frontText.SetActive(false);
+        continua.SetActive(false);
+        sideText.GetComponent<TextMeshProUGUI>().text = "Quando un pedone raggiunge l'ultimo lato della scacchiera, può essere promosso in un pezzo a tua scelta. Clicca sul pedone";
+        sideText.SetActive(true);
         CalculateMoves.foundBase = false;
         while (!CalculateMoves.foundBase)
         {
             yield return null;
         }
-        yield return new WaitForSeconds(5f);
-        BoardController.ResetChessBoard();
+        sideText.SetActive(false);
+        CalculateMoves.foundPromotion = false;
+        while (!CalculateMoves.foundPromotion)
+        {
+            yield return null;
+        }
+        yield return new WaitForSeconds(3f);
+        panel.SetActive(false);
+        frontText.GetComponent<TextMeshProUGUI>().text = "complimenti hai completato il tutorial!";
+        continua.GetComponentInChildren<TextMeshProUGUI>().text = "menù";
+        frontText.SetActive(true);
+        yield return new WaitForSeconds(1f);
+        continua.SetActive(true);
+        ready = false;
+        while (ready == false)
+        {
+            yield return null;
+        }
+        SceneManager.LoadScene(0);
     }
 
 

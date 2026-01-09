@@ -50,6 +50,7 @@ public class Promotion : MonoBehaviour
         if (isWhite)
         {
             GameObject whiteQueen = Instantiate(white_queen);
+            whiteQueen.SetActive(true);
             whiteQueen.transform.SetParent(CalculateMoves.savedChessBoardState.piece.transform);
             whiteQueen.transform.localPosition = Vector3.zero;
             whiteQueen.name = $"Queen_{k}_{l}";
@@ -62,6 +63,7 @@ public class Promotion : MonoBehaviour
         else
         {
             GameObject blackQueen = Instantiate(black_queen);
+            blackQueen.SetActive(true);
             blackQueen.transform.SetParent(CalculateMoves.savedChessBoardState.piece.transform);
             blackQueen.transform.localPosition = Vector3.zero;
             blackQueen.name = $"Queen_{k}_{l}";
@@ -70,7 +72,8 @@ public class Promotion : MonoBehaviour
             BoardController.ChessBoardState[k, l].piece = blackQueen;
             targetPiece.GetComponent<MeshRenderer>().enabled = false;
             targetPiece.GetComponent<Collider>().enabled = false;
-        }     
+        }
+        CalculateMoves.foundPromotion = true;
     }
     public void Knight()
     {
@@ -79,6 +82,7 @@ public class Promotion : MonoBehaviour
         if (isWhite)
         {
             GameObject whiteKnight = Instantiate(white_knight);
+            whiteKnight.SetActive(true);
             whiteKnight.transform.SetParent(CalculateMoves.savedChessBoardState.piece.transform);
             whiteKnight.transform.localPosition = Vector3.zero;
             whiteKnight.name = $"Knight_{k}_{l}";
@@ -91,6 +95,7 @@ public class Promotion : MonoBehaviour
         else
         {
             GameObject blackKnight = Instantiate(black_knight);
+            blackKnight.SetActive(true);
             blackKnight.transform.SetParent(CalculateMoves.savedChessBoardState.piece.transform);
             blackKnight.transform.localPosition = Vector3.zero;
             blackKnight.name = $"Knight_{k}_{l}";
@@ -100,6 +105,7 @@ public class Promotion : MonoBehaviour
             targetPiece.GetComponent<MeshRenderer>().enabled = false;
             targetPiece.GetComponent<Collider>().enabled = false;
         }
+        CalculateMoves.foundPromotion = true;
     }
     public void Rook()
     {
@@ -108,6 +114,7 @@ public class Promotion : MonoBehaviour
         if (isWhite)
         {
             GameObject whiteRook = Instantiate(white_rook);
+            whiteRook.SetActive(true);
             whiteRook.transform.SetParent(CalculateMoves.savedChessBoardState.piece.transform);
             whiteRook.transform.localPosition = Vector3.zero;
             whiteRook.name = $"Rook_{k}_{l}";
@@ -120,6 +127,7 @@ public class Promotion : MonoBehaviour
         else
         {
             GameObject blackRook = Instantiate(black_rook);
+            blackRook.SetActive(true);
             blackRook.transform.SetParent(CalculateMoves.savedChessBoardState.piece.transform);
             blackRook.transform.localPosition = Vector3.zero;
             blackRook.name = $"Rook_{k}_{l}";
@@ -129,6 +137,7 @@ public class Promotion : MonoBehaviour
             targetPiece.GetComponent<MeshRenderer>().enabled = false;
             targetPiece.GetComponent<Collider>().enabled = false;
         }
+        CalculateMoves.foundPromotion = true;
     }
     public void Bishop()
     {
@@ -137,6 +146,7 @@ public class Promotion : MonoBehaviour
         if (isWhite)
         {
             GameObject whiteBishop = Instantiate(white_bishop);
+            whiteBishop.SetActive(true);
             whiteBishop.transform.SetParent(CalculateMoves.savedChessBoardState.piece.transform);
             whiteBishop.transform.localPosition = Vector3.zero;
             whiteBishop.name = $"Bishop_{k}_{l}";
@@ -149,6 +159,7 @@ public class Promotion : MonoBehaviour
         else
         {
             GameObject blackBishop = Instantiate(black_bishop);
+            blackBishop.SetActive(true);
             blackBishop.transform.SetParent(CalculateMoves.savedChessBoardState.piece.transform);
             blackBishop.transform.localPosition = Vector3.zero;
             blackBishop.name = $"Bishop_{k}_{l}";
@@ -158,6 +169,6 @@ public class Promotion : MonoBehaviour
             targetPiece.GetComponent<MeshRenderer>().enabled = false;
             targetPiece.GetComponent<Collider>().enabled = false;
         }
+        CalculateMoves.foundPromotion = true;
     }
-
 }

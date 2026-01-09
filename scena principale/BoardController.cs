@@ -9,27 +9,26 @@ public class BoardController : MonoBehaviour
 {
 	private StartingPositions StartingPositions;
     private CalculateMoves CalculateMoves;
-    private MovingAnimation MovingAnimation;
     public PieceState[,] ChessBoardState = new PieceState[8, 8];
     private const int board_Size = 8;
     public GameObject visualBoardPlane;
     public Vector3[,] gridPositions = new Vector3[board_Size, board_Size];
     public GameObject clickedobject;
     public bool blackTurn = false;
-    public bool enable = false; 
+    public bool enable = true;
+    [HideInInspector] public bool isInitialized = false; //important
 
     private void Awake()
     {
 		StartingPositions = GetComponent<StartingPositions>();
         CalculateMoves = GetComponent<CalculateMoves>();
-        MovingAnimation = GetComponent<MovingAnimation>();
     }
 
     public void Start()
     {
         GenerateLogicalGrid();
         StartingPositions.SetPositions();
-        LogBoardState();
+        LogBoardState(); //important
     }
 
     void GenerateLogicalGrid()
@@ -231,6 +230,7 @@ public class BoardController : MonoBehaviour
         sb.AppendLine("=================================================");
 
         Debug.Log(sb.ToString());
+        isInitialized = true; //important
     }
     private char GetPieceChar(PieceType type, bool isWhite)
     {
