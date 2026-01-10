@@ -23,6 +23,7 @@ public class ControllerAperture : MonoBehaviour
     public PieceState emptyState = new PieceState();
     private int a = 5;
     private int b = 5;
+    private Badge Badge;
     public void Continue()
     {
         ready = true;
@@ -35,6 +36,7 @@ public class ControllerAperture : MonoBehaviour
         BoardController = GetComponent<BoardController>();
         CalculateMoves = GetComponent<CalculateMoves>();
         MovingAnimation = GetComponent<MovingAnimation>();
+        Badge = GetComponent<Badge>();
     }
     private void Start()
     {
@@ -353,12 +355,13 @@ public class ControllerAperture : MonoBehaviour
         {
             yield return null;
         }
+        Badge.ShowAchievement();
         panel.SetActive(false);
         sideText.SetActive(false);    
         continua.SetActive(false);
         frontText.GetComponent<TextMeshProUGUI>().text = "complimenti hai completato il corso sulle aperture!";
         frontText.SetActive(true);
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(4f);
         continua2.SetActive(true);
         continua2.GetComponentInChildren<TextMeshProUGUI>().text = "menù";
         ready = false;

@@ -10,15 +10,17 @@ public class CalculateMoves : MonoBehaviour
     public SpriteLoader[] SpriteLoader;
     private Promotion Promotion;
     [HideInInspector] public bool[] movedRooks = new bool[4]; //false di base
-    [HideInInspector] public bool[] movedKing = new bool[2];
-    private bool castled = false;
+    public bool[] movedKing = new bool[2];
+    public bool castled = false;
     public List<(int X, int Y)> legalMoves = new();
     public List<(int X, int Y)> legalCaptures = new();
     public List<(int X, int Y)> savedCaptures = new();
     public List<(int X, int Y)> oldClickedPieceCaptures = new();
     public GameObject finalpos;
     public PieceState savedChessBoardState;
+    public PieceState oldClickedPiecePuzzle;
     public Vector3 savedGridPosition;
+    public PieceState newClickedPiecePuzzle;
     public bool found = false;
     public bool foundBase = false;
     public bool foundCapture = false;
@@ -449,13 +451,15 @@ public class CalculateMoves : MonoBehaviour
                     else if (savedChessBoardState.piece == StartingPositions.black_king)
                     {
                         movedKing[1] = true;
-                    }                
+                    }
+                    oldClickedPiecePuzzle = savedChessBoardState;
+                    newClickedPiecePuzzle.postion = new Vector2Int(i, j);
+                    BoardController.ChessBoardState[i, j] = savedChessBoardState;
                     BoardController.ChessBoardState[i, j].postion = new Vector2Int(i, j);
                     BoardController.ChessBoardState[savedChessBoardState.postion.x, savedChessBoardState.postion.y] = emptyState;
                     savedCaptures.Clear();
                     found = true;
-                    foundBase = true;
-                    BoardController.ChessBoardState[i, j] = savedChessBoardState;
+                    foundBase = true;                  
                 }
                 else if (CheckCapturesPos(BoardController.clickedobject, i, j))  /////////captures
                 {
@@ -482,31 +486,42 @@ public class CalculateMoves : MonoBehaviour
                     else if (savedChessBoardState.piece == StartingPositions.black_king)
                     {
                         movedKing[1] = true;
-                    }                  
+                    }
+
+                    oldClickedPiecePuzzle = savedChessBoardState;
+                    newClickedPiecePuzzle = BoardController.ChessBoardState[i, j];
+                    BoardController.ChessBoardState[i, j] = savedChessBoardState;                    
                     BoardController.ChessBoardState[i, j].postion = new Vector2Int(i, j);
                     BoardController.ChessBoardState[savedChessBoardState.postion.x, savedChessBoardState.postion.y] = emptyState;
                     savedCaptures.Clear();
                     found = true;
-                    foundCapture = true;
-                    BoardController.ChessBoardState[i, j] = savedChessBoardState;
+                    foundCapture = true;                   
                 }
-                if (BoardController.ChessBoardState[i, j].piece == savedChessBoardState.piece && savedChessBoardState.pieceType == PieceType.pawn && i == 7 && savedChessBoardState.isWhite)
+                if (savedChessBoardState.piece != null)
                 {
-                    for (int v = 0; v < 4; v++)
+                    if (BoardController.ChessBoardState[i, j].piece == savedChessBoardState.piece && savedChessBoardState.pieceType == PieceType.pawn && i == 7 && savedChessBoardState.isWhite)
                     {
-                        SpriteLoader[v].SetIcon(savedChessBoardState.isWhite);
-                    }        
-                    Promotion.Pause(i, j, true);
-                }
-                else if (BoardController.ChessBoardState[i, j].piece == savedChessBoardState.piece && savedChessBoardState.pieceType == PieceType.pawn && i == 0 && savedChessBoardState.isWhite == false)
-                {
-                    for (int v = 0; v < 4; v++)
+                        for (int v = 0; v < 4; v++)
+                        {
+                            SpriteLoader[v].SetIcon(savedChessBoardState.isWhite);
+                        }
+                        Promotion.Pause(i, j, true);
+                    }
+                    else if (BoardController.ChessBoardState[i, j].piece == savedChessBoardState.piece && savedChessBoardState.pieceType == PieceType.pawn && i == 0 && savedChessBoardState.isWhite == false)
                     {
-                        SpriteLoader[v].SetIcon(savedChessBoardState.isWhite);
-                    }       
-                    Promotion.Pause(i, j, false);
+                        for (int v = 0; v < 4; v++)
+                        {
+                            SpriteLoader[v].SetIcon(savedChessBoardState.isWhite);
+                        }
+                        Promotion.Pause(i, j, false);
+                    }
                 }
             }
+        }
+        if (found == false)
+        {
+            savedChessBoardState.piece = null;
+            savedCaptures.Clear();
         }
 
         StringBuilder legalMovesString = new();

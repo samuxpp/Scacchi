@@ -29,6 +29,7 @@ public class BoardController : MonoBehaviour
         GenerateLogicalGrid();
         StartingPositions.SetPositions();
         LogBoardState(); //important
+        Screen.SetResolution(1920, 1080, true);
     }
 
     void GenerateLogicalGrid()

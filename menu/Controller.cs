@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Controller : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class Controller : MonoBehaviour
     private float moveDuration = 1f;
     private Vector3 pos;
     public GameObject canvas;
+    public Image logoImage;
 
     private Camera mainCam;
 
@@ -17,6 +19,14 @@ public class Controller : MonoBehaviour
     {
         mainCam = Camera.main;
         canvas.SetActive(true);
+    }
+
+    public void Start()
+    {
+        Outline outl = logoImage.gameObject.GetComponent<Outline>();
+        if (outl == null) outl = logoImage.gameObject.AddComponent<Outline>();
+        outl.effectColor = Color.black;
+        outl.effectDistance = new Vector2(2f, -2f);
     }
 
     public void Tutorial()

@@ -18,6 +18,7 @@ public class ControllerTutorial : MonoBehaviour
     public GameObject continua;
     public GameObject panel;
     private bool ready = false;
+    private Badge Badge;
     public void Awake()
     {
         ready = false;
@@ -25,6 +26,7 @@ public class ControllerTutorial : MonoBehaviour
         BoardController = GetComponent<BoardController>();
         CalculateMoves = GetComponent<CalculateMoves>();
         MovingAnimation = GetComponent<MovingAnimation>();
+        Badge = GetComponent<Badge>();
     }
     public void Start()
     {
@@ -59,14 +61,12 @@ public class ControllerTutorial : MonoBehaviour
         if (BoardController.ChessBoardState[2, 4].piece != null)
         {
             BoardController.ChessBoardState[3, 3] = BoardController.ChessBoardState[6, 3];
-            MovingAnimation.AnimateAndMovePiece(BoardController.ChessBoardState[6, 3].piece, BoardController.gridPositions[6, 3] + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[3, 3]);
-            
+            MovingAnimation.AnimateAndMovePiece(BoardController.ChessBoardState[6, 3].piece, BoardController.gridPositions[6, 3] + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[3, 3]);         
         }
         else if (BoardController.ChessBoardState[3, 4].piece != null)
         {
             BoardController.ChessBoardState[4, 3] = BoardController.ChessBoardState[6, 3];
-            MovingAnimation.AnimateAndMovePiece(BoardController.ChessBoardState[6, 3].piece, BoardController.gridPositions[6, 3] + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[4, 3]);
-            
+            MovingAnimation.AnimateAndMovePiece(BoardController.ChessBoardState[6, 3].piece, BoardController.gridPositions[6, 3] + new Vector3(0f, 0.7f, 0f), BoardController.gridPositions[4, 3]);           
         }
         sideText.GetComponent<TextMeshProUGUI>().text = "Il pedone può catturare qualsiasi pezzo ma può farlo soltanto in diagonale. Clicca sul pedone";
         CalculateMoves.found = false;
@@ -530,11 +530,12 @@ public class ControllerTutorial : MonoBehaviour
             yield return null;
         }
         yield return new WaitForSeconds(3f);
+        Badge.ShowAchievement();
         panel.SetActive(false);
         frontText.GetComponent<TextMeshProUGUI>().text = "complimenti hai completato il tutorial!";
         continua.GetComponentInChildren<TextMeshProUGUI>().text = "menù";
         frontText.SetActive(true);
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(4f);
         continua.SetActive(true);
         ready = false;
         while (ready == false)
